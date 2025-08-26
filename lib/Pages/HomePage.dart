@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../Model/MenuItem.dart';
 import '../Widget/MenuCard.dart';
+import '../Pages/CadastroMovimentacao.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -15,7 +16,14 @@ class HomePage extends StatelessWidget {
       MenuItemModel(
         titulo: "Histórico de Atividades",
         imagem: "assets/icons/alarm.png",
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const CadastroMovimentacao(),
+            ),
+          );
+        },
       ),
       MenuItemModel(
         titulo: "Dicas de Finanças",
@@ -59,7 +67,9 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.keyboard_backspace),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         title: Image.asset(
           "assets/titulo.jpg",
@@ -75,7 +85,6 @@ class HomePage extends StatelessWidget {
           const SizedBox(width: 12),
         ],
       ),
-
       body: GridView.builder(
         padding: const EdgeInsets.all(12),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
