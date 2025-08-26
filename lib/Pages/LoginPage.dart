@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'HomePage.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -19,25 +17,52 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _loginController = TextEditingController();
+  final TextEditingController _senhaController = TextEditingController();
+
+  void _entrar() {
+    final login = _loginController.text.trim();
+    final senha = _senhaController.text.trim();
+
+    if (login.isEmpty || senha.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, preencha todos os campos.'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomePage()),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF4C8C64), // cor de fundo verde
+      backgroundColor: const Color(0xFF4C8C64),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 60),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Logo
               Center(
                 child: Column(
                   children: [
                     Image.asset(
-                      'assets/LogoPoupex.png', // Coloque seu logo em assets
+                      'assets/LogoPoupex.png',
                       height: 120,
                     ),
                     const SizedBox(height: 8),
@@ -57,6 +82,7 @@ class LoginPage extends StatelessWidget {
 
               // Campo Login
               TextField(
+                controller: _loginController,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.person, color: Colors.black),
                   hintText: 'Login',
@@ -73,6 +99,7 @@ class LoginPage extends StatelessWidget {
 
               // Campo Senha
               TextField(
+                controller: _senhaController,
                 obscureText: true,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.lock, color: Colors.black),
@@ -93,12 +120,7 @@ class LoginPage extends StatelessWidget {
                 width: double.infinity,
                 height: 45,
                 child: ElevatedButton(
-                  onPressed: () {
-                  Navigator.pushReplacement(
-                  context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
-                  );
-              },
+                  onPressed: _entrar,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2E7031),
                     shape: RoundedRectangleBorder(
@@ -126,8 +148,8 @@ class LoginPage extends StatelessWidget {
                 height: 45,
                 child: ElevatedButton.icon(
                   onPressed: () {},
-                  icon: Image.asset('assets/google.png', height: 20), // ícone do Google
-                  label: const Text("Entrar com google"),
+                  icon: Image.asset('assets/google.png', height: 20),
+                  label: const Text("Entrar com Google"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF3EA860),
                     shape: RoundedRectangleBorder(
@@ -144,8 +166,8 @@ class LoginPage extends StatelessWidget {
                 height: 45,
                 child: ElevatedButton.icon(
                   onPressed: () {},
-                  icon: Image.asset('assets/facebook.png', height: 20), // ícone do Facebook
-                  label: const Text("Entrar com facebook"),
+                  icon: Image.asset('assets/facebook.png', height: 20),
+                  label: const Text("Entrar com Facebook"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF3EA860),
                     shape: RoundedRectangleBorder(
