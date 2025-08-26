@@ -15,7 +15,7 @@ class CadastroMovimentacao extends StatelessWidget {
           },
         ),
         title: Image.asset(
-          "assets/LogoPoupex.png",
+          "assets/titulo.jpg",
           height: 40,
           fit: BoxFit.contain,
         ),

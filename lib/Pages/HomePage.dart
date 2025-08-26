@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../Model/MenuItem.dart';
 import '../Widget/MenuCard.dart';
 import '../Pages/CadastroMovimentacao.dart';
+import '../Pages/dicas_de_financas.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -28,7 +29,12 @@ class HomePage extends StatelessWidget {
       MenuItemModel(
         titulo: "Dicas de Finanças",
         imagem: "assets/icons/money.png",
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => DicasFinancasPage()),
+          );
+        },
       ),
       MenuItemModel(
         titulo: "Calendário Financeiro",
