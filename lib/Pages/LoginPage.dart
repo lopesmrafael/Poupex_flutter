@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projeto_pity/Pages/CadastroPage.dart';
 import 'HomePage.dart';
 
 void main() {
@@ -180,7 +181,14 @@ class _LoginPageState extends State<LoginPage> {
 
               // Criar conta
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                    Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CadastroPage(),
+                    ),
+                  );
+                },
                 child: const Text(
                   "CRIAR CONTA",
                   style: TextStyle(
