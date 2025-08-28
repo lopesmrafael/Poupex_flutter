@@ -3,6 +3,7 @@ import '../Model/MenuItem.dart';
 import '../Widget/MenuCard.dart';
 import '../Pages/CadastroMovimentacao.dart';
 import '../Pages/dicas_de_financas.dart';
+import '../Pages/DashboardFinanPage.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -12,7 +13,14 @@ class HomePage extends StatelessWidget {
       MenuItemModel(
         titulo: "Dashboard Financeiro",
         imagem: "assets/icons/dashboard.png",
-        onTap: () {},
+        onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const DashboardFinanPage(),
+            ),
+          );
+        },
       ),
       MenuItemModel(
         titulo: "Histórico de Atividades",
