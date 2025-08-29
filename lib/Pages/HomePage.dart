@@ -4,6 +4,7 @@ import '../Widget/MenuCard.dart';
 import '../Pages/CadastroMovimentacao.dart';
 import '../Pages/dicas_de_financas.dart';
 import '../Pages/DashboardFinanPage.dart';
+import '../Pages/CalendarioFinanceiroPage.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -47,7 +48,12 @@ class HomePage extends StatelessWidget {
       MenuItemModel(
         titulo: "Calendário Financeiro",
         imagem: "assets/icons/calendar.png",
-        onTap: () {},
+       onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CalendarioScreen()),
+          );
+        },
       ),
       MenuItemModel(
         titulo: "Meus Pontos",
@@ -114,3 +120,4 @@ class HomePage extends StatelessWidget {
     );
   }
 }
+
