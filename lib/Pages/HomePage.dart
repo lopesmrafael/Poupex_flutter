@@ -5,6 +5,7 @@ import '../Pages/CadastroMovimentacao.dart';
 import '../Pages/dicas_de_financas.dart';
 import '../Pages/DashboardFinanPage.dart';
 import '../Pages/CalendarioFinanceiroPage.dart';
+import '../Pages/reward_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -58,7 +59,12 @@ class HomePage extends StatelessWidget {
       MenuItemModel(
         titulo: "Meus Pontos",
         imagem: "assets/icons/star.png",
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => RewardsPage()),
+          );
+        },
       ),
       MenuItemModel(
         titulo: "Metas Financeiras",
