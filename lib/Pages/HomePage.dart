@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projeto_pity/Pages/relatorioFinanceiroPage.dart';
 import '../Model/MenuItem.dart';
 import '../Widget/MenuCard.dart';
 import '../Pages/CadastroMovimentacao.dart';
@@ -79,7 +80,14 @@ class HomePage extends StatelessWidget {
       MenuItemModel(
         titulo: "Relatório",
         imagem: "assets/icons/table.png",
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const RelatorioFinanceiroPage(),
+            ),
+          );
+        },
       ),
     ];
   }

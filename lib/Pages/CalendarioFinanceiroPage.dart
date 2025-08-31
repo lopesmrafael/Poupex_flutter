@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_pity/Widget/calendar_widget.dart';
 import 'package:projeto_pity/Widget/task_list_widget.dart';
-import '../widgets/calendar_widget.dart';
-import '../widgets/task_list_widget.dart';
 
 class CalendarioScreen extends StatefulWidget {
   @override
