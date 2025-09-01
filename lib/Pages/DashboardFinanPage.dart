@@ -1,27 +1,33 @@
 import 'package:flutter/material.dart';
-
+import 'package:fl_chart/fl_chart.dart';
 
 class DashboardFinanPage extends StatelessWidget {
   const DashboardFinanPage({super.key});
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF54A781),
       appBar: AppBar(
-        title: Image.asset(
-          "assets/titulo.jpg",
-          height: 40,
-          fit: BoxFit.contain,
+        title: const Text(
+          "Poupe✖",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF327355),
         actions: [
-          IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
-          const SizedBox(width: 12),
-          IconButton(icon: const Icon(Icons.person), onPressed: () {}),
-          const SizedBox(width: 12),
+          IconButton(
+            icon: const Icon(Icons.settings, color: Colors.black),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.person, color: Colors.black),
+            onPressed: () {},
+          ),
         ],
       ),
       body: Padding(
@@ -39,7 +45,7 @@ class DashboardFinanPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             const Text(
-              "Olá, Usuario!\nAqui está seus dados financeiros\nde forma clara e organizada.",
+              "Olá, Rafael!!\nAqui está seus dados financeiros\nde forma clara e organizada.",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white70, fontSize: 16),
             ),
@@ -53,36 +59,104 @@ class DashboardFinanPage extends StatelessWidget {
               ),
             ),
             const Text(
-              "+1.000",
+              "+ 1.000",
               style: TextStyle(
                 fontSize: 18,
                 color: Colors.lightGreenAccent,
+                fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 20),
+
+            // Gráfico
             Container(
-              height: 150,
-              width: double.infinity,
+              height: 160,
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: const Color(0xFF327355),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Center(
-                child: Text(
-                  "Gráfico",
-                  style: TextStyle(color: Colors.white54),
+              child: LineChart(
+                LineChartData(
+                  backgroundColor: const Color(0xFF327355),
+                  gridData: FlGridData(show: true),
+                  titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 20,
+                        getTitlesWidget: (value, meta) {
+                          final meses = [
+                            "JAN",
+                            "FEV",
+                            "MAR",
+                            "ABR",
+                            "MAI",
+                            "JUN",
+                            "JUL",
+                            "AGO",
+                            "SET",
+                            "OUT",
+                            "NOV",
+                            "DEZ"
+                          ];
+                          return Text(
+                            meses[value.toInt() % 12],
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 10),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  borderData: FlBorderData(show: false),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: const [
+                        FlSpot(0, 2),
+                        FlSpot(1, 1.5),
+                        FlSpot(2, 3),
+                        FlSpot(3, 2.2),
+                        FlSpot(4, 2.8),
+                        FlSpot(5, 3.5),
+                        FlSpot(6, 2.5),
+                        FlSpot(7, 3.8),
+                        FlSpot(8, 4.2),
+                        FlSpot(9, 4.8),
+                        FlSpot(10, 5),
+                        FlSpot(11, 6),
+                      ],
+                      isCurved: true,
+                      color: Colors.lightGreenAccent,
+                      dotData: FlDotData(show: false),
+                      belowBarData: BarAreaData(show: false),
+                    ),
+                  ],
                 ),
               ),
             ),
             const SizedBox(height: 20),
+
+            // Cards Renda / Despesa
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                cardInfo("Renda", "\$500,000", "+60.10", Colors.green),
-                cardInfo("Despesa", "\$500,000", "-60.10", Colors.red),
+                cardInfo("Renda", "\$500.000", "+60.10", Colors.green, true),
+                cardInfo("Despesa", "\$500.000", "-60.10", Colors.red, false),
               ],
             ),
             const SizedBox(height: 20),
+
+            // Lista de Projetos
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(12),
@@ -95,7 +169,8 @@ class DashboardFinanPage extends StatelessWidget {
                     projetoItem("Janeiro", "50,000", "Completo", Colors.green),
                     projetoItem("Fevereiro", "30,000", "Completo", Colors.green),
                     projetoItem("Março", "5,000", "Completo", Colors.green),
-                    projetoItem("Abril", "70,000", "Em andamento", Colors.orange),
+                    projetoItem(
+                        "Abril", "70,000", "Em andamento", Colors.orange),
                   ],
                 ),
               ),
@@ -107,7 +182,8 @@ class DashboardFinanPage extends StatelessWidget {
   }
 }
 
-Widget cardInfo(String titulo, String valor, String variacao, Color cor) {
+Widget cardInfo(
+    String titulo, String valor, String variacao, Color cor, bool positivo) {
   return Container(
     width: 150,
     padding: const EdgeInsets.all(12),
@@ -131,9 +207,20 @@ Widget cardInfo(String titulo, String valor, String variacao, Color cor) {
           ),
         ),
         const SizedBox(height: 5),
-        Text(
-          variacao,
-          style: TextStyle(color: cor, fontSize: 14),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              positivo ? Icons.arrow_upward : Icons.arrow_downward,
+              color: cor,
+              size: 16,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              variacao,
+              style: TextStyle(color: cor, fontSize: 14),
+            ),
+          ],
         ),
       ],
     ),
@@ -157,7 +244,8 @@ class projetoItem extends StatelessWidget {
       child: ListTile(
         title: Text(
           mes,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
           "\$$valor",

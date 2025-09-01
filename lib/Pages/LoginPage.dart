@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_pity/Pages/CadastroPage.dart';
 import 'HomePage.dart';
+import '../Pages/redefinirSenhaPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -134,14 +135,24 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 20),
 
               // Redefinir senha
-              const Text(
-                "Redefinir senha",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 20),
+GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const RedefinirSenhaPage (), // <- sua tela de redefinição
+      ),
+    );
+  },
+  child: Text(
+    "Redefinir senha",
+    style: TextStyle(
+      color: Colors.black,
+      fontWeight: FontWeight.w500,
+      decoration: TextDecoration.underline, // deixa estilo "link"
+    ),
+  ),
+),
 
               // Botão Google
               SizedBox(
