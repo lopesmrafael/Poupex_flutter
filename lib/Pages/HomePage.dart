@@ -7,6 +7,7 @@ import '../Pages/dicas_de_financas.dart';
 import '../Pages/DashboardFinanPage.dart';
 import '../Pages/CalendarioFinanceiroPage.dart';
 import '../Pages/reward_page.dart';
+import '../Pages/metas_financeirasPage.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -70,7 +71,14 @@ class HomePage extends StatelessWidget {
       MenuItemModel(
         titulo: "Metas Financeiras",
         imagem: "assets/icons/medal.png",
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MetasFinanceirasScreen(),
+            ),
+          );
+        },
       ),
       MenuItemModel(
         titulo: "Orçamento Mensal",
