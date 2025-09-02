@@ -52,7 +52,7 @@ Comentários da turma
 
 Adicionar comentário para a turma...
 
-# Nome do Projeto
+# Poupe X
 <!-- Substitua pelo nome do projeto -->
 
 ## Descrição
