@@ -112,7 +112,7 @@ Cloud Firestore (Firebase)
 
 ### ⚙️ 2. Instalação
 # Clone o repositório
-git clone https://github.com/seu-usuario/poupex_flutter.git
+git clone [https://github.com/seu-usuario/poupex_flutter.git](https://github.com/lopesmrafael/Poupex_flutter.git)
 
 # Acesse a pasta do projeto
 cd poupex_flutter
