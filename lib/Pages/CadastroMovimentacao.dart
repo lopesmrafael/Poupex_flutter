@@ -1,7 +1,65 @@
 import 'package:flutter/material.dart';
 
-class CadastroMovimentacao extends StatelessWidget {
+class CadastroMovimentacao extends StatefulWidget {
   const CadastroMovimentacao({super.key});
+
+  @override
+  State<CadastroMovimentacao> createState() => _CadastroMovimentacaoState();
+}
+
+class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
+  final descricaoController = TextEditingController();
+  final valorController = TextEditingController();
+  final dataController = TextEditingController();
+
+  // Lista dinâmica de transações
+  final List<Map<String, dynamic>> transacoes = [
+    
+  ];
+
+  double get totalReceitas => transacoes
+      .where((t) => t["tipo"] == "receita")
+      .fold(0.0, (s, t) => s + t["valor"]);
+
+  double get totalDespesas => transacoes
+      .where((t) => t["tipo"] == "despesa")
+      .fold(0.0, (s, t) => s + t["valor"]);
+
+  void cadastrarMovimentacao() {
+    final descricao = descricaoController.text.trim();
+    final valorText = valorController.text.trim();
+    final data = dataController.text.trim();
+
+    if (descricao.isEmpty || valorText.isEmpty || data.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Preencha todos os campos!")),
+      );
+      return;
+    }
+
+    final valor = double.tryParse(valorText);
+    if (valor == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Valor inválido!")),
+      );
+      return;
+    }
+
+    // Definindo tipo automaticamente (positivo = receita, negativo = despesa)
+    final tipo = valor > 0 ? "receita" : "despesa";
+
+    setState(() {
+      transacoes.add({
+        "descricao": descricao,
+        "valor": valor.abs(),
+        "tipo": tipo,
+        "data": data,
+      });
+      descricaoController.clear();
+      valorController.clear();
+      dataController.clear();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +120,7 @@ class CadastroMovimentacao extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     TextField(
+                      controller: descricaoController,
                       decoration: InputDecoration(
                         labelText: "Descrição",
                         filled: true,
@@ -73,6 +132,7 @@ class CadastroMovimentacao extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     TextField(
+                      controller: valorController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: "Valor",
@@ -85,6 +145,7 @@ class CadastroMovimentacao extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     TextField(
+                      controller: dataController,
                       decoration: InputDecoration(
                         labelText: "Data",
                         filled: true,
@@ -103,7 +164,7 @@ class CadastroMovimentacao extends StatelessWidget {
                         ),
                         minimumSize: const Size(double.infinity, 40),
                       ),
-                      onPressed: () {},
+                      onPressed: cadastrarMovimentacao,
                       child: const Text("CADASTRAR"),
                     ),
                   ],
@@ -126,29 +187,27 @@ class CadastroMovimentacao extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
-                children: const [
-                  ListTile(
-                    title: Text("Aluguel", style: TextStyle(color: Colors.white)),
-                    trailing: Text(
-                      "\$2000.00  ▲",
-                      style: TextStyle(color: Colors.greenAccent),
+                children: transacoes.map((t) {
+                  final isReceita = t["tipo"] == "receita";
+                  return ListTile(
+                    title: Text(
+                      t["descricao"],
+                      style: const TextStyle(color: Colors.white),
                     ),
-                  ),
-                  ListTile(
-                    title: Text("Pqto do Churrasco", style: TextStyle(color: Colors.white)),
+                    subtitle: t["data"] != null
+                        ? Text(
+                            t["data"],
+                            style: const TextStyle(color: Colors.white70),
+                          )
+                        : null,
                     trailing: Text(
-                      "\$200.00  ▼",
-                      style: TextStyle(color: Colors.redAccent),
+                      "${isReceita ? "+" : "-"}\$${t["valor"].toStringAsFixed(2)} ${isReceita ? "▲" : "▼"}",
+                      style: TextStyle(
+                        color: isReceita ? Colors.greenAccent : Colors.redAccent,
+                      ),
                     ),
-                  ),
-                  ListTile(
-                    title: Text("Lazer", style: TextStyle(color: Colors.white)),
-                    trailing: Text(
-                      "\$500.00  ▼",
-                      style: TextStyle(color: Colors.redAccent),
-                    ),
-                  ),
-                ],
+                  );
+                }).toList(),
               ),
             ),
             const SizedBox(height: 20),
@@ -169,18 +228,18 @@ class CadastroMovimentacao extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
-                children: const [
+                children: [
                   Text(
-                    "↑ +\$2700.00",
-                    style: TextStyle(
+                    "↑ +\$${totalReceitas.toStringAsFixed(2)}",
+                    style: const TextStyle(
                       color: Colors.greenAccent,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    "↓ -\$810.00",
-                    style: TextStyle(
+                    "↓ -\$${totalDespesas.toStringAsFixed(2)}",
+                    style: const TextStyle(
                       color: Colors.redAccent,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
