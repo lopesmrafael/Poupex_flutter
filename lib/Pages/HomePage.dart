@@ -8,6 +8,7 @@ import '../Pages/DashboardFinanPage.dart';
 import '../Pages/CalendarioFinanceiroPage.dart';
 import '../Pages/reward_page.dart';
 import '../Pages/metas_financeirasPage.dart';
+import '../Pages/orcamentoMensalPage.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -83,7 +84,14 @@ class HomePage extends StatelessWidget {
       MenuItemModel(
         titulo: "Orçamento Mensal",
         imagem: "assets/icons/cauculator.png",
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const OrcamentoMensal(),
+            ),
+          );
+        },
       ),
       MenuItemModel(
         titulo: "Relatório",
