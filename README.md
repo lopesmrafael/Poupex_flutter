@@ -2,6 +2,8 @@
 <!-- Substitua pelo nome do projeto -->
 
 ## Descrição
+Muitas pessoas gastam dinheiro ao longo do mês sem perceber para onde ele está indo. No final do mês, elas se surpreendem ao ver que gastaram mais do que o previsto e não conseguem economizar por falta de planejamento. O aplicativo vai fazer o planejamento financeiro do cliente, listar gastos fixos, variáveis, o quanto ela quer economizar e quanto economizou. Dando ao usuário a opção de gerenciar suas finanças pessoais de maneira eficaz.
+
 <!-- Escreva aqui um resumo do projeto, sua finalidade e principais funcionalidades -->
 
 ## Integrantes
