@@ -10,7 +10,7 @@ class CalendarioScreen extends StatefulWidget {
 class _CalendarioScreenState extends State<CalendarioScreen> {
   DateTime selectedDate = DateTime.now();
   Map<DateTime, List<String>> events = {};
-  Map<DateTime, String> dayTypes = {}; // 'pagamento' ou 'gasto'
+  Map<DateTime, String> dayTypes = {}; // 'entrada' ou 'gasto'
 
   void _onDateSelected(DateTime date) {
     setState(() {
@@ -31,7 +31,7 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
 
   void _showAddEventDialog() {
     String eventText = '';
-    String eventType = 'pagamento';
+    String eventType = 'entrada'; // valor inicial agora é "entrada"
 
     showDialog(
       context: context,
@@ -61,7 +61,7 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
                     ),
                     items: [
                       DropdownMenuItem(
-                        value: 'pagamento',
+                        value: 'entrada',
                         child: Row(
                           children: [
                             Container(
@@ -70,7 +70,7 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
                               color: Colors.green,
                               margin: EdgeInsets.only(right: 8),
                             ),
-                            Text('Pagamento'),
+                            Text('Entrada'),
                           ],
                         ),
                       ),
