@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../repository/movimentacao_repository.dart';
 import 'ConfiguracoesPage.dart';
 import 'PerfilPage.dart';
@@ -16,12 +17,16 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
   final dataController = TextEditingController();
   final MovimentacaoRepository _repository = MovimentacaoRepository();
 
+  String? tipoSelecionado;
+  DateTime dataSelecionada = DateTime.now();
+  TimeOfDay? horaSelecionada;
   List<Map<String, dynamic>> transacoes = [];
 
   @override
   void initState() {
     super.initState();
     _carregarTransacoes();
+    _atualizarDataHoraTexto();
   }
 
   void _carregarTransacoes() async {
@@ -30,9 +35,13 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
       setState(() {
         transacoes = movimentacoes;
       });
-    } catch (e) {
-      // Ignora erro se não conseguir carregar
-    }
+    } catch (e) {}
+  }
+
+  void _atualizarDataHoraTexto() {
+    final agora = DateTime.now();
+    final formatada = DateFormat('dd/MM/yyyy HH:mm').format(agora);
+    dataController.text = formatada;
   }
 
   double get totalReceitas => transacoes
@@ -46,9 +55,8 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
   void cadastrarMovimentacao() async {
     final descricao = descricaoController.text.trim();
     final valorText = valorController.text.trim();
-    final data = dataController.text.trim();
 
-    if (descricao.isEmpty || valorText.isEmpty || data.isEmpty) {
+    if (descricao.isEmpty || valorText.isEmpty || tipoSelecionado == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Preencha todos os campos!")),
       );
@@ -63,23 +71,34 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
       return;
     }
 
-    final tipo = valor > 0 ? "receita" : "despesa";
+    // Usa a data atual + hora selecionada (ou atual)
+    DateTime dataFinal = DateTime.now();
+    if (horaSelecionada != null) {
+      dataFinal = DateTime(
+        dataFinal.year,
+        dataFinal.month,
+        dataFinal.day,
+        horaSelecionada!.hour,
+        horaSelecionada!.minute,
+      );
+    }
 
     try {
       await _repository.addMovimentacao(
         descricao: descricao,
         valor: valor.abs(),
-        tipo: tipo,
-        data: DateTime.now(),
+        tipo: tipoSelecionado == "Entrada" ? "receita" : "despesa",
+        data: dataFinal,
         categoria: 'Geral',
       );
-      
+
       descricaoController.clear();
       valorController.clear();
-      dataController.clear();
-      
+      tipoSelecionado = null;
+      horaSelecionada = null;
+      _atualizarDataHoraTexto();
       _carregarTransacoes();
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Movimentação cadastrada!")),
       );
@@ -88,6 +107,42 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
         SnackBar(content: Text("Erro: $e")),
       );
     }
+  }
+
+  Future<void> _selecionarHora(BuildContext context) async {
+    final TimeOfDay? selecionada = await showTimePicker(
+      context: context,
+      initialTime: horaSelecionada ?? TimeOfDay.now(),
+    );
+
+    if (selecionada != null) {
+      setState(() {
+        horaSelecionada = selecionada;
+        final agora = DateTime.now();
+        final dataFinal = DateTime(
+          agora.year,
+          agora.month,
+          agora.day,
+          selecionada.hour,
+          selecionada.minute,
+        );
+        dataController.text = DateFormat('dd/MM/yyyy HH:mm').format(dataFinal);
+      });
+    }
+  }
+
+  String _formatarData(dynamic data) {
+    try {
+      if (data is String) {
+        final parsed = DateTime.tryParse(data);
+        if (parsed != null) {
+          return DateFormat('dd/MM/yyyy HH:mm').format(parsed);
+        }
+      } else if (data is DateTime) {
+        return DateFormat('dd/MM/yyyy HH:mm').format(data);
+      }
+    } catch (_) {}
+    return data.toString();
   }
 
   @override
@@ -191,14 +246,44 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
                     const SizedBox(height: 10),
                     TextField(
                       controller: dataController,
+                      readOnly: true,
+                      onTap: () => _selecionarHora(context),
                       decoration: InputDecoration(
-                        labelText: "Data",
+                        labelText: "Hora",
+                        suffixIcon: const Icon(Icons.access_time),
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
+                    ),
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<String>(
+                      value: tipoSelecionado,
+                      decoration: InputDecoration(
+                        labelText: "Tipo de Movimentação",
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                          value: "Entrada",
+                          child: Text("Entrada (Receita)"),
+                        ),
+                        DropdownMenuItem(
+                          value: "Saída",
+                          child: Text("Saída (Despesa)"),
+                        ),
+                      ],
+                      onChanged: (valor) {
+                        setState(() {
+                          tipoSelecionado = valor;
+                        });
+                      },
                     ),
                     const SizedBox(height: 12),
                     ElevatedButton(
@@ -241,12 +326,12 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
                     ),
                     subtitle: t["data"] != null
                         ? Text(
-                            t["data"],
+                            _formatarData(t["data"]),
                             style: const TextStyle(color: Colors.white70),
                           )
                         : null,
                     trailing: Text(
-                      "${isReceita ? "+" : "-"}\$${t["valor"].toStringAsFixed(2)} ${isReceita ? "▲" : "▼"}",
+                      "${isReceita ? "+" : "-"}R\$${t["valor"].toStringAsFixed(2)} ${isReceita ? "▲" : "▼"}",
                       style: TextStyle(
                         color: isReceita ? Colors.greenAccent : Colors.redAccent,
                       ),
@@ -275,7 +360,7 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
               child: Column(
                 children: [
                   Text(
-                    "↑ +\$${totalReceitas.toStringAsFixed(2)}",
+                    "↑ +R\$${totalReceitas.toStringAsFixed(2)}",
                     style: const TextStyle(
                       color: Colors.greenAccent,
                       fontSize: 18,
@@ -283,7 +368,7 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
                     ),
                   ),
                   Text(
-                    "↓ -\$${totalDespesas.toStringAsFixed(2)}",
+                    "↓ -R\$${totalDespesas.toStringAsFixed(2)}",
                     style: const TextStyle(
                       color: Colors.redAccent,
                       fontSize: 18,
