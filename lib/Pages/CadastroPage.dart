@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_multi_formatter/flutter_multi_formatter.dart'; // Para a máscara
+import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:projeto_pity/Pages/LoginPage.dart';
+import '../repository/auth_repository.dart';
 
 class CadastroPage extends StatefulWidget {
   const CadastroPage({super.key});
@@ -14,6 +15,7 @@ class _CadastroPageState extends State<CadastroPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _telefoneController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
+  final AuthRepository _authRepository = AuthRepository();
 
   void _inscrever() async {
     final nome = _nomeController.text.trim();
@@ -29,7 +31,10 @@ class _CadastroPageState extends State<CadastroPage> {
           duration: Duration(seconds: 2),
         ),
       );
-    } else if (!email.contains('@')) {
+      return;
+    }
+    
+    if (!email.contains('@')) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Email inválido. Inclua o @.'),
@@ -37,8 +42,12 @@ class _CadastroPageState extends State<CadastroPage> {
           duration: Duration(seconds: 2),
         ),
       );
-    } else {
-      // Mostra mensagem de sucesso
+      return;
+    }
+
+    try {
+      await _authRepository.signUp(email, senha, nome, telefone);
+      
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Cadastro realizado com sucesso!'),
@@ -47,13 +56,18 @@ class _CadastroPageState extends State<CadastroPage> {
         ),
       );
 
-      // Espera a SnackBar terminar antes de navegar
       await Future.delayed(const Duration(seconds: 2));
-
-      // Navega para a LoginPage
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro: ${e.toString().replaceAll('Exception: ', '')}'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
       );
     }
   }

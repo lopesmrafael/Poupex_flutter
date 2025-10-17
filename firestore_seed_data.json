@@ -1,0 +1,76 @@
+{
+  "dicas_financeiras": [
+    {
+      "titulo": "Organize suas finanças",
+      "descricao": "Mantenha um controle detalhado de suas receitas e despesas mensais. Use planilhas ou aplicativos para acompanhar para onde está indo seu dinheiro.",
+      "icone": "assets/iconsDicas/organizacao.png",
+      "categoria": "organizacao",
+      "ordem": 1,
+      "ativa": true,
+      "visualizacoes": 0
+    },
+    {
+      "titulo": "Crie uma reserva de emergência",
+      "descricao": "Tenha sempre uma quantia equivalente a 3-6 meses de gastos guardada para imprevistos como desemprego ou emergências médicas.",
+      "icone": "assets/iconsDicas/reserva_emergencia.png",
+      "categoria": "poupanca",
+      "ordem": 2,
+      "ativa": true,
+      "visualizacoes": 0
+    },
+    {
+      "titulo": "Evite compras impulsivas",
+      "descricao": "Antes de fazer uma compra não planejada, espere 24 horas. Pergunte-se se realmente precisa do item ou se é apenas um desejo momentâneo.",
+      "icone": "assets/iconsDicas/compras_impulsivas.png",
+      "categoria": "gastos",
+      "ordem": 3,
+      "ativa": true,
+      "visualizacoes": 0
+    },
+    {
+      "titulo": "Invista em educação financeira",
+      "descricao": "Leia livros, faça cursos e busque conhecimento sobre finanças pessoais. O conhecimento é a base para boas decisões financeiras.",
+      "icone": "assets/iconsDicas/educacao.png",
+      "categoria": "educacao",
+      "ordem": 4,
+      "ativa": true,
+      "visualizacoes": 0
+    },
+    {
+      "titulo": "Considere investimentos",
+      "descricao": "Após criar sua reserva de emergência, considere investir em produtos financeiros que façam seu dinheiro trabalhar para você.",
+      "icone": "assets/iconsDicas/investimento.png",
+      "categoria": "investimento",
+      "ordem": 5,
+      "ativa": true,
+      "visualizacoes": 0
+    },
+    {
+      "titulo": "Cuidado com juros altos",
+      "descricao": "Evite dívidas com juros compostos elevados como cartão de crédito e cheque especial. Quite essas dívidas o quanto antes.",
+      "icone": "assets/iconsDicas/juros.png",
+      "categoria": "dividas",
+      "ordem": 6,
+      "ativa": true,
+      "visualizacoes": 0
+    },
+    {
+      "titulo": "Defina metas financeiras",
+      "descricao": "Estabeleça objetivos claros e mensuráveis para suas finanças, como comprar uma casa, fazer uma viagem ou se aposentar.",
+      "icone": "assets/iconsDicas/consciente.png",
+      "categoria": "planejamento",
+      "ordem": 7,
+      "ativa": true,
+      "visualizacoes": 0
+    },
+    {
+      "titulo": "Busque aumentar sua renda",
+      "descricao": "Procure formas de aumentar sua renda através de cursos, certificações, trabalhos extras ou empreendedorismo.",
+      "icone": "assets/iconsDicas/aumento_renda.png",
+      "categoria": "renda",
+      "ordem": 8,
+      "ativa": true,
+      "visualizacoes": 0
+    }
+  ]
+}

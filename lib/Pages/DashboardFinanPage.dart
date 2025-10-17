@@ -1,8 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../repository/movimentacao_repository.dart';
+import 'ConfiguracoesPage.dart';
+import 'PerfilPage.dart';
 
-class DashboardFinanPage extends StatelessWidget {
+class DashboardFinanPage extends StatefulWidget {
   const DashboardFinanPage({super.key});
+
+  @override
+  State<DashboardFinanPage> createState() => _DashboardFinanPageState();
+}
+
+class _DashboardFinanPageState extends State<DashboardFinanPage> {
+  final MovimentacaoRepository _movimentacaoRepository = MovimentacaoRepository();
+  Map<String, double> _resumoFinanceiro = {
+    'receitas': 0.0,
+    'despesas': 0.0,
+    'saldo': 0.0,
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarResumoFinanceiro();
+  }
+
+  void _carregarResumoFinanceiro() async {
+    try {
+      Map<String, double> resumo = await _movimentacaoRepository.getResumoFinanceiro();
+      setState(() {
+        _resumoFinanceiro = resumo;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao carregar dados: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +56,21 @@ class DashboardFinanPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.black),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ConfiguracoesPage()),
+              );
+            },
           ),
           IconButton(
             icon: const Icon(Icons.person, color: Colors.black),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PerfilPage()),
+              );
+            },
           ),
         ],
       ),
@@ -50,19 +94,19 @@ class DashboardFinanPage extends StatelessWidget {
               style: TextStyle(color: Colors.white70, fontSize: 16),
             ),
             const SizedBox(height: 20),
-            const Text(
-              "\$999,999",
-              style: TextStyle(
+            Text(
+              "R\$ ${_resumoFinanceiro['saldo']!.toStringAsFixed(2)}",
+              style: const TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
-            const Text(
-              "+ 1.000",
+            Text(
+              _resumoFinanceiro['saldo']! >= 0 ? "+ ${_resumoFinanceiro['saldo']!.toStringAsFixed(2)}" : "${_resumoFinanceiro['saldo']!.toStringAsFixed(2)}",
               style: TextStyle(
                 fontSize: 18,
-                color: Colors.lightGreenAccent,
+                color: _resumoFinanceiro['saldo']! >= 0 ? Colors.lightGreenAccent : Colors.redAccent,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -150,8 +194,8 @@ class DashboardFinanPage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                cardInfo("Renda", "\$500.000", "+60.10", Colors.green, true),
-                cardInfo("Despesa", "\$500.000", "-60.10", Colors.red, false),
+                cardInfo("Renda", "R\$ ${_resumoFinanceiro['receitas']!.toStringAsFixed(2)}", "+${_resumoFinanceiro['receitas']!.toStringAsFixed(2)}", Colors.green, true),
+                cardInfo("Despesa", "R\$ ${_resumoFinanceiro['despesas']!.toStringAsFixed(2)}", "-${_resumoFinanceiro['despesas']!.toStringAsFixed(2)}", Colors.red, false),
               ],
             ),
             const SizedBox(height: 20),

@@ -9,6 +9,8 @@ import '../Pages/CalendarioFinanceiroPage.dart';
 import '../Pages/reward_page.dart';
 import '../Pages/metas_financeirasPage.dart';
 import '../Pages/orcamentoMensalPage.dart';
+import '../Pages/ConfiguracoesPage.dart';
+import '../Pages/PerfilPage.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -129,9 +131,25 @@ class HomePage extends StatelessWidget {
         centerTitle: true,
         backgroundColor: const Color(0xFF327355),
         actions: [
-          IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ConfiguracoesPage()),
+              );
+            },
+          ),
           const SizedBox(width: 12),
-          IconButton(icon: const Icon(Icons.person), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PerfilPage()),
+              );
+            },
+          ),
           const SizedBox(width: 12),
         ],
       ),

@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // MODO DE TESTE - Permite leitura e escrita para todos
+    // ATENÇÃO: Altere essas regras antes de ir para produção!
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

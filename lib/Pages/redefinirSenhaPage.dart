@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../repository/auth_repository.dart';
 
 class RedefinirSenhaPage extends StatefulWidget {
   const RedefinirSenhaPage({super.key});
@@ -9,6 +10,7 @@ class RedefinirSenhaPage extends StatefulWidget {
 
 class _RedefinirSenhaPageState extends State<RedefinirSenhaPage> {
   final TextEditingController _emailController = TextEditingController();
+  final AuthRepository _authRepository = AuthRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -87,13 +89,35 @@ class _RedefinirSenhaPageState extends State<RedefinirSenhaPage> {
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  onPressed: () {
-                    // aqui você pode implementar o envio do email
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("E-mail de redefinição enviado!"),
-                      ),
-                    );
+                  onPressed: () async {
+                    final email = _emailController.text.trim();
+                    
+                    if (email.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Por favor, digite seu e-mail"),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+                    
+                    try {
+                      await _authRepository.resetPassword(email);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("E-mail de redefinição enviado!"),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Erro: ${e.toString().replaceAll('Exception: ', '')}"),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   },
                   child: const Text(
                     "ENVIAR",

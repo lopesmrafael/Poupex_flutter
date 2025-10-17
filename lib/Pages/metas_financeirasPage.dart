@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../repository/meta_financeira_repository_simple.dart';
 
 class MetasFinanceirasScreen extends StatefulWidget {
   const MetasFinanceirasScreen({Key? key}) : super(key: key);
@@ -8,11 +9,26 @@ class MetasFinanceirasScreen extends StatefulWidget {
 }
 
 class _MetasFinanceirasScreenState extends State<MetasFinanceirasScreen> {
-  final List<Map<String, dynamic>> _metas = [
+  final MetaFinanceiraRepositorySimple _repository = MetaFinanceiraRepositorySimple();
+  List<Map<String, dynamic>> _metas = [];
+  String? _statusSelecionado;
 
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _carregarMetas();
+  }
 
-  String? _statusSelecionado; // Status escolhido no dropdown
+  void _carregarMetas() async {
+    try {
+      final metas = await _repository.listarMetas();
+      setState(() {
+        _metas = metas;
+      });
+    } catch (e) {
+      // Ignora erro se não conseguir carregar
+    }
+  }
 
   // Abre formulário para cadastrar nova meta
   void _abrirFormulario() {
@@ -112,18 +128,26 @@ class _MetasFinanceirasScreenState extends State<MetasFinanceirasScreen> {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                  onPressed: () {
+                  onPressed: () async {
                     if (tituloController.text.isNotEmpty &&
                         valorController.text.isNotEmpty &&
                         _statusSelecionado != null) {
-                      setState(() {
-                        _metas.add({
-                          "titulo": tituloController.text,
-                          "valor": "R\$ ${valorController.text}",
-                          "status": _statusSelecionado!,
-                        });
-                      });
-                      Navigator.pop(context);
+                      try {
+                        await _repository.criarMeta(
+                          titulo: tituloController.text,
+                          valor: double.tryParse(valorController.text) ?? 0,
+                          status: _statusSelecionado!,
+                        );
+                        _carregarMetas();
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Meta criada com sucesso!')),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Erro: $e')),
+                        );
+                      }
                     }
                   },
                   child: const Text("Salvar"),
@@ -205,9 +229,9 @@ class _MetasFinanceirasScreenState extends State<MetasFinanceirasScreen> {
               itemBuilder: (context, index) {
                 final meta = _metas[index];
                 return _buildMetaItem(
-                  meta["titulo"],
-                  meta["valor"],
-                  meta["status"],
+                  meta["titulo"] ?? '',
+                  "R\$ ${meta['valor']?.toStringAsFixed(2) ?? '0.00'}",
+                  meta["status"] ?? 'Planejada',
                 );
               },
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../repository/orcamento_repository_simple.dart';
 
 class OrcamentoMensal extends StatefulWidget {
   const OrcamentoMensal({super.key});
@@ -8,6 +9,8 @@ class OrcamentoMensal extends StatefulWidget {
 }
 
 class _OrcamentoMensalState extends State<OrcamentoMensal> {
+  final OrcamentoRepositorySimple _repository = OrcamentoRepositorySimple();
+  
   // Controllers para renda
   final TextEditingController rendaDescController = TextEditingController();
   final TextEditingController rendaValorController = TextEditingController();
@@ -21,30 +24,77 @@ class _OrcamentoMensalState extends State<OrcamentoMensal> {
   final TextEditingController variavelValorController = TextEditingController();
 
   // Listas para armazenar os dados
-  List<String> renda = [];
-  List<String> gastosFixos = [];
-  List<String> gastosVariaveis = [];
+  List<Map<String, dynamic>> rendas = [];
+  List<Map<String, dynamic>> gastosFixos = [];
+  List<Map<String, dynamic>> gastosVariaveis = [];
 
-  void adicionarOrcamento() {
-    setState(() {
-      if (rendaDescController.text.isNotEmpty && rendaValorController.text.isNotEmpty) {
-        renda.add("${rendaDescController.text}: ${rendaValorController.text}");
-      }
-      if (fixoDescController.text.isNotEmpty && fixoValorController.text.isNotEmpty) {
-        gastosFixos.add("${fixoDescController.text}: ${fixoValorController.text}");
-      }
-      if (variavelDescController.text.isNotEmpty && variavelValorController.text.isNotEmpty) {
-        gastosVariaveis.add("${variavelDescController.text}: ${variavelValorController.text}");
-      }
+  @override
+  void initState() {
+    super.initState();
+    _carregarOrcamento();
+  }
 
-      // Limpar campos
-      rendaDescController.clear();
-      rendaValorController.clear();
-      fixoDescController.clear();
-      fixoValorController.clear();
-      variavelDescController.clear();
-      variavelValorController.clear();
-    });
+  void _carregarOrcamento() async {
+    try {
+      final orcamento = await _repository.getOrcamentoAtual();
+      if (orcamento != null) {
+        setState(() {
+          rendas = List<Map<String, dynamic>>.from(orcamento['rendas'] ?? []);
+          gastosFixos = List<Map<String, dynamic>>.from(orcamento['gastosFixos'] ?? []);
+          gastosVariaveis = List<Map<String, dynamic>>.from(orcamento['gastosVariaveis'] ?? []);
+        });
+      }
+    } catch (e) {
+      // Ignora erro se não conseguir carregar
+    }
+  }
+
+  void adicionarOrcamento() async {
+    // Adicionar novos itens às listas
+    if (rendaDescController.text.isNotEmpty && rendaValorController.text.isNotEmpty) {
+      rendas.add({
+        'descricao': rendaDescController.text,
+        'valor': double.tryParse(rendaValorController.text) ?? 0.0,
+      });
+    }
+    if (fixoDescController.text.isNotEmpty && fixoValorController.text.isNotEmpty) {
+      gastosFixos.add({
+        'descricao': fixoDescController.text,
+        'valor': double.tryParse(fixoValorController.text) ?? 0.0,
+      });
+    }
+    if (variavelDescController.text.isNotEmpty && variavelValorController.text.isNotEmpty) {
+      gastosVariaveis.add({
+        'descricao': variavelDescController.text,
+        'valor': double.tryParse(variavelValorController.text) ?? 0.0,
+      });
+    }
+
+    try {
+      await _repository.salvarOrcamento(
+        rendas: rendas,
+        gastosFixos: gastosFixos,
+        gastosVariaveis: gastosVariaveis,
+      );
+      
+      setState(() {
+        // Limpar campos
+        rendaDescController.clear();
+        rendaValorController.clear();
+        fixoDescController.clear();
+        fixoValorController.clear();
+        variavelDescController.clear();
+        variavelValorController.clear();
+      });
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Orçamento salvo com sucesso!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro: $e')),
+      );
+    }
   }
 
   @override
@@ -117,12 +167,21 @@ class _OrcamentoMensalState extends State<OrcamentoMensal> {
               ),
             ),
             const SizedBox(height: 20),
-            if (renda.isNotEmpty)
+            if (rendas.isNotEmpty)
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(color: const Color(0xFF327355), borderRadius: BorderRadius.circular(8)),
-                child: Text("RENDA MENSAL:\n${renda.join('\n')}", style: const TextStyle(color: Colors.white)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("RENDA MENSAL:", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ...rendas.map((item) => Text(
+                      "${item['descricao']}: R\$ ${item['valor'].toStringAsFixed(2)}",
+                      style: const TextStyle(color: Colors.white),
+                    )),
+                  ],
+                ),
               ),
             const SizedBox(height: 12),
             if (gastosFixos.isNotEmpty)
@@ -130,7 +189,16 @@ class _OrcamentoMensalState extends State<OrcamentoMensal> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(color: const Color(0xFF327355), borderRadius: BorderRadius.circular(8)),
-                child: Text("GASTOS FIXOS:\n${gastosFixos.join('\n')}", style: const TextStyle(color: Colors.white)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("GASTOS FIXOS:", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ...gastosFixos.map((item) => Text(
+                      "${item['descricao']}: R\$ ${item['valor'].toStringAsFixed(2)}",
+                      style: const TextStyle(color: Colors.white),
+                    )),
+                  ],
+                ),
               ),
             const SizedBox(height: 12),
             if (gastosVariaveis.isNotEmpty)
@@ -138,7 +206,16 @@ class _OrcamentoMensalState extends State<OrcamentoMensal> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(color: const Color(0xFF327355), borderRadius: BorderRadius.circular(8)),
-                child: Text("GASTOS VARIÁVEIS:\n${gastosVariaveis.join('\n')}", style: const TextStyle(color: Colors.white)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("GASTOS VARIÁVEIS:", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ...gastosVariaveis.map((item) => Text(
+                      "${item['descricao']}: R\$ ${item['valor'].toStringAsFixed(2)}",
+                      style: const TextStyle(color: Colors.white),
+                    )),
+                  ],
+                ),
               ),
             const SizedBox(height: 30),
           ],

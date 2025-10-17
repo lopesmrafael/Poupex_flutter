@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../repository/movimentacao_repository.dart';
+import 'ConfiguracoesPage.dart';
+import 'PerfilPage.dart';
 
 class CadastroMovimentacao extends StatefulWidget {
   const CadastroMovimentacao({super.key});
@@ -11,11 +14,26 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
   final descricaoController = TextEditingController();
   final valorController = TextEditingController();
   final dataController = TextEditingController();
+  final MovimentacaoRepository _repository = MovimentacaoRepository();
 
-  // Lista dinâmica de transações
-  final List<Map<String, dynamic>> transacoes = [
-    
-  ];
+  List<Map<String, dynamic>> transacoes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarTransacoes();
+  }
+
+  void _carregarTransacoes() async {
+    try {
+      final movimentacoes = await _repository.getMovimentacoes();
+      setState(() {
+        transacoes = movimentacoes;
+      });
+    } catch (e) {
+      // Ignora erro se não conseguir carregar
+    }
+  }
 
   double get totalReceitas => transacoes
       .where((t) => t["tipo"] == "receita")
@@ -25,7 +43,7 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
       .where((t) => t["tipo"] == "despesa")
       .fold(0.0, (s, t) => s + t["valor"]);
 
-  void cadastrarMovimentacao() {
+  void cadastrarMovimentacao() async {
     final descricao = descricaoController.text.trim();
     final valorText = valorController.text.trim();
     final data = dataController.text.trim();
@@ -45,20 +63,31 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
       return;
     }
 
-    // Definindo tipo automaticamente (positivo = receita, negativo = despesa)
     final tipo = valor > 0 ? "receita" : "despesa";
 
-    setState(() {
-      transacoes.add({
-        "descricao": descricao,
-        "valor": valor.abs(),
-        "tipo": tipo,
-        "data": data,
-      });
+    try {
+      await _repository.addMovimentacao(
+        descricao: descricao,
+        valor: valor.abs(),
+        tipo: tipo,
+        data: DateTime.now(),
+        categoria: 'Geral',
+      );
+      
       descricaoController.clear();
       valorController.clear();
       dataController.clear();
-    });
+      
+      _carregarTransacoes();
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Movimentação cadastrada!")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erro: $e")),
+      );
+    }
   }
 
   @override
@@ -80,9 +109,25 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
         centerTitle: true,
         backgroundColor: const Color(0xFF327355),
         actions: [
-          IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ConfiguracoesPage()),
+              );
+            },
+          ),
           const SizedBox(width: 12),
-          IconButton(icon: const Icon(Icons.person), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PerfilPage()),
+              );
+            },
+          ),
           const SizedBox(width: 12),
         ],
       ),
