@@ -1,8 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../repository/data_manager.dart';
 import '../repository/auth_repository.dart';
 import 'ConfiguracoesPage.dart';
 import 'PerfilPage.dart';
+
+/// 🔹 Repositório local de pontos (SharedPreferences)
+class PontosRepository {
+  static const String _key = 'pontosAcumulados';
+
+  Future<int> getPontos() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_key) ?? 0;
+  }
+
+  Future<void> adicionarPontos(int pontos) async {
+    final prefs = await SharedPreferences.getInstance();
+    final atual = prefs.getInt(_key) ?? 0;
+    await prefs.setInt(_key, atual + pontos);
+  }
+
+  Future<void> resetarPontos() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_key);
+  }
+}
 
 class RelatorioFinanceiroPage extends StatefulWidget {
   const RelatorioFinanceiroPage({super.key});
@@ -15,9 +37,11 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
   final DataManager _dataManager = DataManager();
   final AuthRepository _authRepository = AuthRepository();
   final TextEditingController _emailController = TextEditingController();
-  
+  final PontosRepository _pontosRepository = PontosRepository();
+
   Map<String, dynamic> _estatisticas = {};
   String _nomeUsuario = 'Usuário';
+  int _pontosAcumulados = 0;
 
   @override
   void initState() {
@@ -25,14 +49,15 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
     _carregarDados();
   }
 
-  void _carregarDados() async {
+  Future<void> _carregarDados() async {
     try {
       _estatisticas = await _dataManager.getEstatisticas();
       final usuario = _authRepository.getCurrentUser();
       _nomeUsuario = usuario?['displayName'] ?? 'Usuário';
+      _pontosAcumulados = await _pontosRepository.getPontos();
       setState(() {});
     } catch (e) {
-      // Ignora erro
+      debugPrint('Erro ao carregar dados: $e');
     }
   }
 
@@ -97,91 +122,23 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
               ),
             ),
             const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF4E9171),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Resumo Financeiro:",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "• Receitas: R\$ ${(_estatisticas['totalReceitas'] ?? 0.0).toStringAsFixed(2)}",
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  Text(
-                    "• Despesas: R\$ ${(_estatisticas['totalDespesas'] ?? 0.0).toStringAsFixed(2)}",
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  Text(
-                    "• Saldo: R\$ ${(_estatisticas['saldo'] ?? 0.0).toStringAsFixed(2)}",
-                    style: TextStyle(
-                      color: (_estatisticas['saldo'] ?? 0.0) >= 0 ? Colors.green : Colors.red,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+
+            // 📘 RESUMO FINANCEIRO
+            _buildResumoFinanceiro(),
+
             const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF4E9171),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Estatísticas:",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "📊 Total de transações: ${_estatisticas['totalMovimentacoes'] ?? 0}",
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  Text(
-                    "🎯 Metas ativas: ${_estatisticas['totalMetas'] ?? 0}",
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  Text(
-                    "🏆 Pontos acumulados: ${_estatisticas['totalPontos'] ?? 0}",
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
+
+            // 📊 ESTATÍSTICAS (com pontos integrados)
+            _buildEstatisticas(),
+
             const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF4E9171),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Análise:",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _getAnalise(),
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
+
+            // 📈 ANÁLISE
+            _buildAnalise(),
+
             const SizedBox(height: 20),
+
+            // 📄 BOTÃO BAIXAR RELATÓRIO
             ElevatedButton(
               onPressed: _baixarRelatorio,
               style: ElevatedButton.styleFrom(
@@ -198,7 +155,10 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
+
+            // ✉️ ENVIAR POR EMAIL
             const Text(
               "Enviar por Email:",
               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
@@ -237,10 +197,101 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
     );
   }
 
+  Widget _buildResumoFinanceiro() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF4E9171),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Resumo Financeiro:",
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "• Receitas: R\$ ${(_estatisticas['totalReceitas'] ?? 0.0).toStringAsFixed(2)}",
+            style: const TextStyle(color: Colors.white),
+          ),
+          Text(
+            "• Despesas: R\$ ${(_estatisticas['totalDespesas'] ?? 0.0).toStringAsFixed(2)}",
+            style: const TextStyle(color: Colors.white),
+          ),
+          Text(
+            "• Saldo: R\$ ${(_estatisticas['saldo'] ?? 0.0).toStringAsFixed(2)}",
+            style: TextStyle(
+              color: (_estatisticas['saldo'] ?? 0.0) >= 0 ? Colors.green : Colors.red,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEstatisticas() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF4E9171),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Estatísticas:",
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "📊 Total de transações: ${_estatisticas['totalMovimentacoes'] ?? 0}",
+            style: const TextStyle(color: Colors.white),
+          ),
+          Text(
+            "🎯 Metas ativas: ${_estatisticas['totalMetas'] ?? 0}",
+            style: const TextStyle(color: Colors.white),
+          ),
+          Text(
+            "🏆 Pontos acumulados: $_pontosAcumulados",
+            style: const TextStyle(color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAnalise() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF4E9171),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Análise:",
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _getAnalise(),
+            style: const TextStyle(color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+
   String _getAnalise() {
     double saldo = _estatisticas['saldo']?.toDouble() ?? 0.0;
     int transacoes = _estatisticas['totalMovimentacoes'] ?? 0;
-    
+
     if (saldo > 0) {
       return "• Parabéns! Você teve saldo positivo este período.\n• Total de $transacoes transações registradas.\n• Continue mantendo o controle financeiro!";
     } else if (saldo < 0) {
@@ -250,7 +301,7 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
     }
   }
 
-  void _baixarRelatorio() async {
+  Future<void> _baixarRelatorio() async {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -265,10 +316,10 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
         ),
       ),
     );
-    
+
     await Future.delayed(const Duration(seconds: 2));
-    Navigator.pop(context);
-    
+    if (mounted) Navigator.pop(context);
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Relatório baixado com sucesso!'),
@@ -277,7 +328,7 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
     );
   }
 
-  void _enviarPorEmail() async {
+  Future<void> _enviarPorEmail() async {
     if (_emailController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Digite um email válido')),
@@ -299,17 +350,17 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
         ),
       ),
     );
-    
+
     await Future.delayed(const Duration(seconds: 2));
-    Navigator.pop(context);
-    
+    if (mounted) Navigator.pop(context);
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Relatório enviado para ${_emailController.text}'),
         backgroundColor: Colors.green,
       ),
     );
-    
+
     _emailController.clear();
   }
 }

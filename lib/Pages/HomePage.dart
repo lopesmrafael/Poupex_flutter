@@ -67,7 +67,7 @@ class HomePage extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => RewardsPage()),
+            MaterialPageRoute(builder: (context) => DesafiosPage()),
           );
         },
       ),
