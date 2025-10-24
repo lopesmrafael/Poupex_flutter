@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../repository/movimentacao_repository.dart';
+import '../repository/auth_repository.dart';
 import 'ConfiguracoesPage.dart';
 import 'PerfilPage.dart';
 
@@ -13,16 +14,19 @@ class DashboardFinanPage extends StatefulWidget {
 
 class _DashboardFinanPageState extends State<DashboardFinanPage> {
   final MovimentacaoRepository _movimentacaoRepository = MovimentacaoRepository();
+  final AuthRepository _authRepository = AuthRepository();
   Map<String, double> _resumoFinanceiro = {
     'receitas': 0.0,
     'despesas': 0.0,
     'saldo': 0.0,
   };
+  String _nomeUsuario = 'Usuário';
 
   @override
   void initState() {
     super.initState();
     _carregarResumoFinanceiro();
+    _carregarNomeUsuario();
   }
 
   void _carregarResumoFinanceiro() async {
@@ -35,6 +39,15 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erro ao carregar dados: $e')),
       );
+    }
+  }
+
+  void _carregarNomeUsuario() {
+    final user = _authRepository.getCurrentUser();
+    if (user != null && user['displayName'] != null) {
+      setState(() {
+        _nomeUsuario = user['displayName'];
+      });
     }
   }
 
@@ -88,10 +101,10 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
-              "Olá, Rafael!!\nAqui está seus dados financeiros\nde forma clara e organizada.",
+            Text(
+              "Olá, $_nomeUsuario!!\nAqui estão seus dados financeiros\nde forma clara e organizada.",
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white70, fontSize: 16),
+              style: const TextStyle(color: Colors.white70, fontSize: 16),
             ),
             const SizedBox(height: 20),
             Text(

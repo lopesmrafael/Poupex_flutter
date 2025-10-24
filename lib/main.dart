@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'Pages/LoginPage.dart';
+import 'Pages/HomePage.dart';
 import 'repository/theme_manager.dart';
+import 'repository/auth_repository.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,6 +18,24 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool _isLoading = true;
+  bool _isLoggedIn = false;
+  final AuthRepository _authRepository = AuthRepository();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    await _authRepository.loadCurrentUser();
+    setState(() {
+      _isLoggedIn = _authRepository.isLoggedIn();
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,7 +53,14 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       themeMode: ThemeManager.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: const LoginPage(),
+      home: _isLoading 
+        ? const Scaffold(
+            backgroundColor: Color(0xFF54A781),
+            body: Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            ),
+          )
+        : _isLoggedIn ? const HomePage() : const LoginPage(),
     );
   }
   

@@ -11,6 +11,7 @@ import '../Pages/metas_financeirasPage.dart';
 import '../Pages/orcamentoMensalPage.dart';
 import '../Pages/ConfiguracoesPage.dart';
 import '../Pages/PerfilPage.dart';
+import '../repository/theme_manager.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -115,7 +116,7 @@ class HomePage extends StatelessWidget {
     final menuItems = _getMenuItems(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF54A781),
+      backgroundColor: ThemeManager.backgroundColor,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.keyboard_backspace),
@@ -129,7 +130,7 @@ class HomePage extends StatelessWidget {
           fit: BoxFit.contain,
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF327355),
+        backgroundColor: ThemeManager.appBarColor,
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),

@@ -13,5 +13,7 @@ class ThemeManager {
   
   static Color get backgroundColor => _isDarkMode ? Colors.black : const Color(0xFF54A781);
   static Color get appBarColor => _isDarkMode ? Colors.grey[900]! : const Color(0xFF327355);
-  static Color get cardColor => _isDarkMode ? Colors.grey[800]! : const Color(0xFF4F9977);
+  static Color get cardColor => _isDarkMode ? Colors.grey[800]! : const Color(0xFF327355);
+  static Color get textColor => _isDarkMode ? Colors.white : Colors.white;
+  static Color get subtitleColor => _isDarkMode ? Colors.grey[400]! : Colors.white70;
 }

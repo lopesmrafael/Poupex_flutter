@@ -12,6 +12,31 @@ class _RedefinirSenhaPageState extends State<RedefinirSenhaPage> {
   final TextEditingController _emailController = TextEditingController();
   final AuthRepository _authRepository = AuthRepository();
 
+  bool _isValidEmail(String email) {
+    final validDomains = ['@gmail.com', '@hotmail.com', '@yahoo.com', '@outlook.com'];
+    return validDomains.any((domain) => email.toLowerCase().endsWith(domain));
+  }
+
+  void _showInvalidEmailDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF327355),
+        title: const Text('Email Inválido', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'O email deve conter um domínio válido:\n• @gmail.com\n• @hotmail.com\n• @yahoo.com\n• @outlook.com',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,6 +124,11 @@ class _RedefinirSenhaPageState extends State<RedefinirSenhaPage> {
                           backgroundColor: Colors.red,
                         ),
                       );
+                      return;
+                    }
+
+                    if (!_isValidEmail(email)) {
+                      _showInvalidEmailDialog();
                       return;
                     }
                     

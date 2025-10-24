@@ -145,6 +145,136 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
     return data.toString();
   }
 
+  void _abrirDepositoPersonalizado() {
+    final descricaoCtrl = TextEditingController();
+    final valorCtrl = TextEditingController();
+    DateTime dataEscolhida = DateTime.now();
+    TimeOfDay horaEscolhida = TimeOfDay.now();
+    String tipoEscolhido = 'Entrada';
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              backgroundColor: const Color(0xFF327355),
+              title: const Text('Depósito Personalizado', style: TextStyle(color: Colors.white)),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: descricaoCtrl,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                        labelText: 'Descrição',
+                        labelStyle: TextStyle(color: Colors.white70),
+                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                      ),
+                    ),
+                    TextField(
+                      controller: valorCtrl,
+                      keyboardType: TextInputType.number,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                        labelText: 'Valor',
+                        labelStyle: TextStyle(color: Colors.white70),
+                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ListTile(
+                      title: Text('Data: ${DateFormat('dd/MM/yyyy').format(dataEscolhida)}', style: const TextStyle(color: Colors.white)),
+                      trailing: const Icon(Icons.calendar_today, color: Colors.white),
+                      onTap: () async {
+                        final data = await showDatePicker(
+                          context: context,
+                          initialDate: dataEscolhida,
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime.now(),
+                        );
+                        if (data != null) {
+                          setStateDialog(() => dataEscolhida = data);
+                        }
+                      },
+                    ),
+                    ListTile(
+                      title: Text('Hora: ${horaEscolhida.format(context)}', style: const TextStyle(color: Colors.white)),
+                      trailing: const Icon(Icons.access_time, color: Colors.white),
+                      onTap: () async {
+                        final hora = await showTimePicker(
+                          context: context,
+                          initialTime: horaEscolhida,
+                        );
+                        if (hora != null) {
+                          setStateDialog(() => horaEscolhida = hora);
+                        }
+                      },
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: tipoEscolhido,
+                      dropdownColor: const Color(0xFF327355),
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                        labelText: 'Tipo',
+                        labelStyle: TextStyle(color: Colors.white70),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'Entrada', child: Text('Entrada (Receita)')),
+                        DropdownMenuItem(value: 'Saída', child: Text('Saída (Despesa)')),
+                      ],
+                      onChanged: (valor) => setStateDialog(() => tipoEscolhido = valor!),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar', style: TextStyle(color: Colors.white70)),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (descricaoCtrl.text.isNotEmpty && valorCtrl.text.isNotEmpty) {
+                      final valor = double.tryParse(valorCtrl.text);
+                      if (valor != null) {
+                        final dataFinal = DateTime(
+                          dataEscolhida.year,
+                          dataEscolhida.month,
+                          dataEscolhida.day,
+                          horaEscolhida.hour,
+                          horaEscolhida.minute,
+                        );
+                        
+                        await _repository.addMovimentacao(
+                          descricao: descricaoCtrl.text,
+                          valor: valor.abs(),
+                          tipo: tipoEscolhido == 'Entrada' ? 'receita' : 'despesa',
+                          data: dataFinal,
+                          categoria: 'Personalizado',
+                        );
+                        
+                        _carregarTransacoes();
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Depósito personalizado cadastrado!')),
+                        );
+                      }
+                    }
+                  },
+                  child: const Text('Salvar'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -286,16 +416,32 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
                       },
                     ),
                     const SizedBox(height: 12),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF327355),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF327355),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: cadastrarMovimentacao,
+                            child: const Text("CADASTRAR"),
+                          ),
                         ),
-                        minimumSize: const Size(double.infinity, 40),
-                      ),
-                      onPressed: cadastrarMovimentacao,
-                      child: const Text("CADASTRAR"),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2E5A3E),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: _abrirDepositoPersonalizado,
+                          child: const Icon(Icons.schedule, size: 20),
+                        ),
+                      ],
                     ),
                   ],
                 ),

@@ -1,10 +1,16 @@
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+
 class AuthRepository {
   static String? _currentUserId;
   static Map<String, dynamic>? _currentUser;
   static Map<String, Map<String, dynamic>> _users = {};
+  static const String _usersKey = 'poupex_users';
+  static const String _currentUserKey = 'poupex_current_user';
 
   Future<Map<String, dynamic>?> signIn(String email, String password) async {
     try {
+      await _loadUsers();
       await Future.delayed(Duration(milliseconds: 500));
       
       if (email.isEmpty || password.isEmpty) {
@@ -15,28 +21,20 @@ class AuthRepository {
         throw Exception('Email inválido');
       }
 
-      // Verifica se usuário existe
       String userId = 'user_${email.hashCode}';
       if (_users.containsKey(userId)) {
         Map<String, dynamic> userData = _users[userId]!;
         if (userData['password'] == password) {
           _currentUserId = userId;
           _currentUser = Map.from(userData)..remove('password');
+          await _saveCurrentUser();
           return _currentUser;
         } else {
           throw Exception('Senha incorreta');
         }
+      } else {
+        throw Exception('Usuário não encontrado');
       }
-      
-      // Login genérico para desenvolvimento
-      _currentUserId = userId;
-      _currentUser = {
-        'uid': userId,
-        'email': email,
-        'displayName': email.split('@')[0],
-        'loginAt': DateTime.now().toIso8601String(),
-      };
-      return _currentUser;
     } catch (e) {
       throw Exception('Erro ao fazer login: ${e.toString().replaceAll('Exception: ', '')}');
     }
@@ -44,6 +42,7 @@ class AuthRepository {
 
   Future<Map<String, dynamic>?> signUp(String email, String password, String nome, String telefone) async {
     try {
+      await _loadUsers();
       await Future.delayed(Duration(milliseconds: 500));
       
       if (email.isEmpty || password.isEmpty || nome.isEmpty) {
@@ -60,12 +59,10 @@ class AuthRepository {
 
       String userId = 'user_${email.hashCode}';
       
-      // Verifica se usuário já existe
       if (_users.containsKey(userId)) {
         throw Exception('Usuário já cadastrado');
       }
 
-      // Cria novo usuário
       Map<String, dynamic> userData = {
         'uid': userId,
         'email': email,
@@ -76,8 +73,11 @@ class AuthRepository {
       };
 
       _users[userId] = userData;
+      await _saveUsers();
+      
       _currentUserId = userId;
       _currentUser = Map.from(userData)..remove('password');
+      await _saveCurrentUser();
       
       return _currentUser;
     } catch (e) {
@@ -89,6 +89,8 @@ class AuthRepository {
     await Future.delayed(Duration(milliseconds: 200));
     _currentUserId = null;
     _currentUser = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_currentUserKey);
   }
 
   Future<void> resetPassword(String email) async {
@@ -127,17 +129,33 @@ class AuthRepository {
     }
   }
 
-  // Dados para desenvolvimento
-  static void _initDemoData() {
-    if (_users.isEmpty) {
-      _users['demo_user'] = {
-        'uid': 'demo_user',
-        'email': 'demo@poupex.com',
-        'displayName': 'Usuário Demo',
-        'telefone': '(11) 99999-9999',
-        'password': '123456',
-        'createdAt': DateTime.now().subtract(Duration(days: 30)).toIso8601String(),
-      };
+  Future<void> _loadUsers() async {
+    final prefs = await SharedPreferences.getInstance();
+    final usersJson = prefs.getString(_usersKey);
+    if (usersJson != null) {
+      final Map<String, dynamic> decoded = json.decode(usersJson);
+      _users = decoded.map((key, value) => MapEntry(key, Map<String, dynamic>.from(value)));
+    }
+  }
+
+  Future<void> _saveUsers() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_usersKey, json.encode(_users));
+  }
+
+  Future<void> _saveCurrentUser() async {
+    if (_currentUser != null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_currentUserKey, json.encode(_currentUser));
+    }
+  }
+
+  Future<void> loadCurrentUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userJson = prefs.getString(_currentUserKey);
+    if (userJson != null) {
+      _currentUser = Map<String, dynamic>.from(json.decode(userJson));
+      _currentUserId = _currentUser!['uid'];
     }
   }
 }

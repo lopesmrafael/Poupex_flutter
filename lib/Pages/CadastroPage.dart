@@ -18,6 +18,31 @@ class _CadastroPageState extends State<CadastroPage> {
   final TextEditingController _senhaController = TextEditingController();
   final AuthRepository _authRepository = AuthRepository();
 
+  bool _isValidEmail(String email) {
+    final validDomains = ['@gmail.com', '@hotmail.com', '@yahoo.com', '@outlook.com'];
+    return validDomains.any((domain) => email.toLowerCase().endsWith(domain));
+  }
+
+  void _showInvalidEmailDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF327355),
+        title: const Text('Email Inválido', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'O email deve conter um domínio válido:\n• @gmail.com\n• @hotmail.com\n• @yahoo.com\n• @outlook.com',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _inscrever() async {
     final nome = _nomeController.text.trim();
     final email = _emailController.text.trim();
@@ -35,14 +60,8 @@ class _CadastroPageState extends State<CadastroPage> {
       return;
     }
     
-    if (!email.contains('@')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Email inválido. Inclua o @.'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
-        ),
-      );
+    if (!_isValidEmail(email)) {
+      _showInvalidEmailDialog();
       return;
     }
 

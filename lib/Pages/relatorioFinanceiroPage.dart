@@ -39,6 +39,11 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
   final TextEditingController _emailController = TextEditingController();
   final PontosRepository _pontosRepository = PontosRepository();
 
+  bool _isValidEmail(String email) {
+    final validDomains = ['@gmail.com', '@hotmail.com', '@yahoo.com', '@outlook.com'];
+    return validDomains.any((domain) => email.toLowerCase().endsWith(domain));
+  }
+
   Map<String, dynamic> _estatisticas = {};
   String _nomeUsuario = 'Usuário';
   int _pontosAcumulados = 0;
@@ -329,35 +334,30 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
   }
 
   Future<void> _enviarPorEmail() async {
-    if (_emailController.text.trim().isEmpty) {
+    final email = _emailController.text.trim();
+    
+    if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Digite um email válido')),
       );
       return;
     }
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const AlertDialog(
-        backgroundColor: Color(0xFF327355),
-        content: Row(
-          children: [
-            CircularProgressIndicator(color: Colors.white),
-            SizedBox(width: 20),
-            Text('Enviando email...', style: TextStyle(color: Colors.white)),
-          ],
+    if (!_isValidEmail(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email deve conter @gmail.com, @hotmail.com, @yahoo.com ou @outlook.com'),
+          backgroundColor: Colors.red,
         ),
-      ),
-    );
-
-    await Future.delayed(const Duration(seconds: 2));
-    if (mounted) Navigator.pop(context);
+      );
+      return;
+    }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Relatório enviado para ${_emailController.text}'),
-        backgroundColor: Colors.green,
+      const SnackBar(
+        content: Text('Este conteúdo está em desenvolvimento'),
+        backgroundColor: Colors.orange,
+        duration: Duration(seconds: 2),
       ),
     );
 
