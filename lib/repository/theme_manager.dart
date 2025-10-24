@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../main.dart';
 
 class ThemeManager {
   static bool _isDarkMode = false;
@@ -7,6 +8,7 @@ class ThemeManager {
   
   static void setDarkMode(bool value) {
     _isDarkMode = value;
+    MyApp.navigatorKey.currentState?.updateTheme();
   }
   
   static Color get backgroundColor => _isDarkMode ? Colors.black : const Color(0xFF54A781);

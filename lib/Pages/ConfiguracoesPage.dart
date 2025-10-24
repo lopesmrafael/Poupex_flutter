@@ -42,7 +42,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF54A781),
+      backgroundColor: ThemeManager.backgroundColor,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.keyboard_backspace, color: Colors.white),
@@ -52,7 +52,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
           'Configurações',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: const Color(0xFF327355),
+        backgroundColor: ThemeManager.appBarColor,
         elevation: 0,
       ),
       body: ListView(
@@ -76,8 +76,8 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
           
           _buildSection('Aparência', [
             _buildSwitchTile(
-              'Modo Escuro',
-              'Tema escuro para o aplicativo',
+              _modoEscuro ? 'Lite Mode' : 'Modo Escuro',
+              _modoEscuro ? 'Voltar ao tema claro' : 'Tema escuro para o aplicativo',
               _modoEscuro,
               (value) async {
                 await _configRepository.setModoEscuro(value);
@@ -85,16 +85,11 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 setState(() {
                   _modoEscuro = value;
                 });
-                // Força rebuild de toda a árvore de widgets
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ConfiguracoesPage()),
-                );
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Modo escuro ${value ? 'ativado' : 'desativado'}')),
+                  SnackBar(content: Text('${value ? 'Modo escuro ativado' : 'Lite mode ativado'}')),
                 );
               },
-              Icons.dark_mode,
+              _modoEscuro ? Icons.light_mode : Icons.dark_mode,
             ),
           ]),
 
@@ -183,7 +178,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
         ),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF327355),
+            color: ThemeManager.cardColor,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(children: children),

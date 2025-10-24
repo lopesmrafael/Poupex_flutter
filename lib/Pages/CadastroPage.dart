@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:projeto_pity/Pages/LoginPage.dart';
 import '../repository/auth_repository.dart';
+import '../Widget/terms_dialog.dart';
 
 class CadastroPage extends StatefulWidget {
   const CadastroPage({super.key});
@@ -57,9 +58,12 @@ class _CadastroPageState extends State<CadastroPage> {
       );
 
       await Future.delayed(const Duration(seconds: 2));
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginPage()),
+      
+      // Exibir termos de uso
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const TermsDialog(),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
