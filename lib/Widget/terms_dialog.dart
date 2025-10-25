@@ -82,7 +82,7 @@ class TermsDialog extends StatelessWidget {
 
   static String _getTermsText() {
     return '''
-🧾 TERMO DE USO, POLÍTICA DE PRIVACIDADE E CONSENTIMENTO PARA TRATAMENTO DE DADOS PESSOAIS – POUPEX
+ TERMO DE USO, POLÍTICA DE PRIVACIDADE E CONSENTIMENTO PARA TRATAMENTO DE DADOS PESSOAIS – POUPEX
 
 Última atualização: 24 de outubro de 2025
 
@@ -90,7 +90,7 @@ O presente documento reúne o Termo de Uso, a Política de Privacidade e o Termo
 
 Ao utilizar o sistema POUPEX, o(a) usuário(a) declara que leu, compreendeu e concorda integralmente com as disposições deste documento, autorizando expressamente o tratamento de seus dados pessoais conforme aqui descrito.
 
-📘 1. CONDIÇÕES GERAIS DE USO
+ 1. CONDIÇÕES GERAIS DE USO
 
 O POUPEX é um aplicativo multiplataforma, desenvolvido em Flutter, destinado ao controle e organização das finanças pessoais. O sistema oferece, entre outras, as seguintes funcionalidades:
 
@@ -103,7 +103,7 @@ O POUPEX é um aplicativo multiplataforma, desenvolvido em Flutter, destinado ao
 
 O uso do aplicativo é pessoal, intransferível e não comercial, sendo vedada qualquer forma de uso indevido, redistribuição ou exploração ilícita.
 
-🔒 2. COLETA E TRATAMENTO DE DADOS PESSOAIS
+ 2. COLETA E TRATAMENTO DE DADOS PESSOAIS
 
 O titular autoriza expressamente o tratamento dos seguintes dados pessoais pelo POUPEX, conforme a LGPD:
 
@@ -113,9 +113,9 @@ O titular autoriza expressamente o tratamento dos seguintes dados pessoais pelo 
 • Dados financeiros: controle de receitas, despesas e metas;
 • Preferências: tema, moeda e notificações.
 
-⚠️ Observação: mesmo que o sistema não colete dados sensíveis diretamente, tais informações podem estar contidas nos dados inseridos pelo usuário. O POUPEX aplica medidas reforçadas de segurança, em conformidade com a LGPD e normas ISO/IEC 27701 e 29100.
+ Observação: mesmo que o sistema não colete dados sensíveis diretamente, tais informações podem estar contidas nos dados inseridos pelo usuário. O POUPEX aplica medidas reforçadas de segurança, em conformidade com a LGPD e normas ISO/IEC 27701 e 29100.
 
-🎯 3. FINALIDADES DO TRATAMENTO
+ 3. FINALIDADES DO TRATAMENTO
 
 Os dados pessoais serão utilizados exclusivamente para:
 
@@ -126,7 +126,7 @@ Os dados pessoais serão utilizados exclusivamente para:
 • Comunicação operacional e suporte;
 • Auditoria e prevenção de incidentes.
 
-⚙️ 4. BASE LEGAL
+ 4. BASE LEGAL
 
 O tratamento se fundamenta em:
 
@@ -135,7 +135,7 @@ O tratamento se fundamenta em:
 • Cumprimento de obrigação legal (art. 7º, II);
 • Legítimo interesse (art. 7º, IX).
 
-🚫 5. USOS PROIBIDOS
+ 5. USOS PROIBIDOS
 
 É vedado ao usuário:
 
@@ -145,7 +145,7 @@ O tratamento se fundamenta em:
 • Acessar dados de outros usuários;
 • Usar o sistema para fins comerciais não autorizados.
 
-🧱 6. SEGURANÇA E GOVERNANÇA
+ 6. SEGURANÇA E GOVERNANÇA
 
 O POUPEX aplica boas práticas de segurança e privacidade, incluindo:
 
@@ -155,7 +155,7 @@ O POUPEX aplica boas práticas de segurança e privacidade, incluindo:
 • Anonimização de dados;
 • Políticas de confidencialidade e resposta a incidentes.
 
-🤝 7. COMPARTILHAMENTO DE DADOS
+ 7. COMPARTILHAMENTO DE DADOS
 
 Os dados não serão compartilhados com terceiros, salvo:
 
@@ -163,7 +163,7 @@ Os dados não serão compartilhados com terceiros, salvo:
 • Obrigações legais;
 • Suporte técnico sob confidencialidade.
 
-👤 8. DIREITOS DO TITULAR
+ 8. DIREITOS DO TITULAR
 
 O titular pode solicitar:
 
@@ -173,30 +173,30 @@ O titular pode solicitar:
 • Revogação do consentimento;
 • Informações sobre compartilhamento.
 
-🧾 9. CONTROLADOR E ENCARREGADO (DPO)
+ 9. CONTROLADOR E ENCARREGADO (DPO)
 
 Controlador: Projeto POUPEX
 Encarregado (DPO): [Nome do responsável]
 E-mail: [contato@poupex.com]
 Telefone: [opcional]
 
-👶 10. DADOS DE CRIANÇAS E ADOLESCENTES
+ 10. DADOS DE CRIANÇAS E ADOLESCENTES
 
 • Dados de menores de 12 anos: apenas com consentimento dos pais;
 • Dados de adolescentes: sempre no melhor interesse do titular;
 • Medidas reforçadas: criptografia, controle de acesso e monitoramento.
 
-📞 11. CANAL DE COMUNICAÇÃO
+ 11. CANAL DE COMUNICAÇÃO
 
 Contato oficial:
-E-mail: [contato@poupex.com]
-Telefone: [opcional]
+E-mail: [22301500@aluno.cotemig.com.br]
+Telefone: [31 98251-1783]
 
-🔄 12. ATUALIZAÇÕES
+ 12. ATUALIZAÇÕES
 
 Este documento poderá ser atualizado periodicamente, conforme alterações legais ou técnicas.
 
-⚖️ 13. LEGISLAÇÃO E FORO
+ 13. LEGISLAÇÃO E FORO
 
 Regido pela legislação brasileira, especialmente a LGPD (Lei nº 13.709/2018). Foro: comarca do domicílio do titular.
 

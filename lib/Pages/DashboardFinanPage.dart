@@ -4,6 +4,7 @@ import '../repository/movimentacao_repository.dart';
 import '../repository/auth_repository.dart';
 import 'ConfiguracoesPage.dart';
 import 'PerfilPage.dart';
+import 'package:intl/intl.dart';
 
 class DashboardFinanPage extends StatefulWidget {
   const DashboardFinanPage({super.key});
@@ -15,21 +16,24 @@ class DashboardFinanPage extends StatefulWidget {
 class _DashboardFinanPageState extends State<DashboardFinanPage> {
   final MovimentacaoRepository _movimentacaoRepository = MovimentacaoRepository();
   final AuthRepository _authRepository = AuthRepository();
+
   Map<String, double> _resumoFinanceiro = {
     'receitas': 0.0,
     'despesas': 0.0,
     'saldo': 0.0,
   };
   String _nomeUsuario = 'Usuário';
+  Map<int, double> _saldosMensais = {};
 
   @override
   void initState() {
     super.initState();
     _carregarResumoFinanceiro();
     _carregarNomeUsuario();
+    _carregarSaldosMensais();
   }
 
-  void _carregarResumoFinanceiro() async {
+  Future<void> _carregarResumoFinanceiro() async {
     try {
       Map<String, double> resumo = await _movimentacaoRepository.getResumoFinanceiro();
       setState(() {
@@ -51,8 +55,27 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
     }
   }
 
+  Future<void> _carregarSaldosMensais() async {
+    try {
+      final resultado = await _movimentacaoRepository.getSaldoMensal(); // deve retornar Map<int, double>
+      if (resultado is Map<int, double>) {
+        setState(() {
+          _saldosMensais = resultado;
+        });
+      }
+    } catch (e) {
+      print("Erro ao carregar saldos mensais: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final mesAtual = DateTime.now().month;
+    final meses = [
+      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ];
+
     return Scaffold(
       backgroundColor: const Color(0xFF54A781),
       appBar: AppBar(
@@ -92,19 +115,19 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
-              "Dashboard Financeiro",
-              style: TextStyle(
+            Text(
+              "Dashboard Financeiro - $_nomeUsuario",
+              style: const TextStyle(
                 fontSize: 20,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 10),
-            Text(
-              "Olá, $_nomeUsuario!!\nAqui estão seus dados financeiros\nde forma clara e organizada.",
+            const Text(
+              "Aqui estão seus dados financeiros\nde forma clara e organizada.",
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white70, fontSize: 16),
+              style: TextStyle(color: Colors.white70, fontSize: 16),
             ),
             const SizedBox(height: 20),
             Text(
@@ -116,18 +139,22 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
               ),
             ),
             Text(
-              _resumoFinanceiro['saldo']! >= 0 ? "+ ${_resumoFinanceiro['saldo']!.toStringAsFixed(2)}" : "${_resumoFinanceiro['saldo']!.toStringAsFixed(2)}",
+              _resumoFinanceiro['saldo']! >= 0
+                  ? "+ ${_resumoFinanceiro['saldo']!.toStringAsFixed(2)}"
+                  : _resumoFinanceiro['saldo']!.toStringAsFixed(2),
               style: TextStyle(
                 fontSize: 18,
-                color: _resumoFinanceiro['saldo']! >= 0 ? Colors.lightGreenAccent : Colors.redAccent,
+                color: _resumoFinanceiro['saldo']! >= 0
+                    ? Colors.lightGreenAccent
+                    : Colors.redAccent,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 20),
 
-            // Gráfico
+            // === Gráfico Dinâmico ===
             Container(
-              height: 160,
+              height: 180,
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: const Color(0xFF327355),
@@ -135,42 +162,28 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
               ),
               child: LineChart(
                 LineChartData(
-                  backgroundColor: const Color(0xFF327355),
                   gridData: FlGridData(show: true),
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
+                        sideTitles: SideTitles(showTitles: false)),
                     rightTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
+                        sideTitles: SideTitles(showTitles: false)),
                     topTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
+                        sideTitles: SideTitles(showTitles: false)),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        reservedSize: 20,
+                        reservedSize: 22,
                         getTitlesWidget: (value, meta) {
-                          final meses = [
-                            "JAN",
-                            "FEV",
-                            "MAR",
-                            "ABR",
-                            "MAI",
-                            "JUN",
-                            "JUL",
-                            "AGO",
-                            "SET",
-                            "OUT",
-                            "NOV",
-                            "DEZ"
-                          ];
-                          return Text(
-                            meses[value.toInt() % 12],
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 10),
-                          );
+                          int index = value.toInt();
+                          if (index >= 0 && index < meses.length) {
+                            return Text(
+                              meses[index].substring(0, 3).toUpperCase(),
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 10),
+                            );
+                          }
+                          return const SizedBox.shrink();
                         },
                       ),
                     ),
@@ -178,42 +191,45 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
                   borderData: FlBorderData(show: false),
                   lineBarsData: [
                     LineChartBarData(
-                      spots: const [
-                        FlSpot(0, 2),
-                        FlSpot(1, 1.5),
-                        FlSpot(2, 3),
-                        FlSpot(3, 2.2),
-                        FlSpot(4, 2.8),
-                        FlSpot(5, 3.5),
-                        FlSpot(6, 2.5),
-                        FlSpot(7, 3.8),
-                        FlSpot(8, 4.2),
-                        FlSpot(9, 4.8),
-                        FlSpot(10, 5),
-                        FlSpot(11, 6),
-                      ],
+                      spots: _saldosMensais.entries
+                          .map((e) => FlSpot(
+                              e.key.toDouble() - 1, e.value.toDouble()))
+                          .toList(),
                       isCurved: true,
                       color: Colors.lightGreenAccent,
+                      barWidth: 3,
                       dotData: FlDotData(show: false),
-                      belowBarData: BarAreaData(show: false),
                     ),
                   ],
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
 
-            // Cards Renda / Despesa
+            // === Cards de Renda e Despesa ===
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                cardInfo("Renda", "R\$ ${_resumoFinanceiro['receitas']!.toStringAsFixed(2)}", "+${_resumoFinanceiro['receitas']!.toStringAsFixed(2)}", Colors.green, true),
-                cardInfo("Despesa", "R\$ ${_resumoFinanceiro['despesas']!.toStringAsFixed(2)}", "-${_resumoFinanceiro['despesas']!.toStringAsFixed(2)}", Colors.red, false),
+                cardInfo(
+                  "Renda",
+                  "R\$ ${_resumoFinanceiro['receitas']!.toStringAsFixed(2)}",
+                  "+${_resumoFinanceiro['receitas']!.toStringAsFixed(2)}",
+                  Colors.green,
+                  true,
+                ),
+                cardInfo(
+                  "Despesa",
+                  "R\$ ${_resumoFinanceiro['despesas']!.toStringAsFixed(2)}",
+                  "-${_resumoFinanceiro['despesas']!.toStringAsFixed(2)}",
+                  Colors.red,
+                  false,
+                ),
               ],
             ),
             const SizedBox(height: 20),
 
-            // Lista de Projetos
+            // === Lista Mensal Dinâmica ===
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(12),
@@ -221,14 +237,25 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
                   color: const Color(0xFF327355),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: ListView(
-                  children: const [
-                    projetoItem("Janeiro", "50,000", "Completo", Colors.green),
-                    projetoItem("Fevereiro", "30,000", "Completo", Colors.green),
-                    projetoItem("Março", "5,000", "Completo", Colors.green),
-                    projetoItem(
-                        "Abril", "70,000", "Em andamento", Colors.orange),
-                  ],
+                child: ListView.builder(
+                  itemCount: mesAtual,
+                  itemBuilder: (context, index) {
+                    final mes = meses[index];
+                    final valor =
+                        _saldosMensais[index + 1]?.toStringAsFixed(2) ?? "0.00";
+                    final status = (index + 1) < mesAtual
+                        ? "Completo"
+                        : (index + 1) == mesAtual
+                            ? "Em andamento"
+                            : "Pendente";
+                    final cor = status == "Em andamento"
+                        ? Colors.orange
+                        : status == "Pendente"
+                            ? Colors.grey
+                            : Colors.green;
+
+                    return projetoItem(mes, valor, status, cor);
+                  },
                 ),
               ),
             ),
@@ -305,7 +332,7 @@ class projetoItem extends StatelessWidget {
               const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
-          "\$$valor",
+          "R\$ $valor",
           style: const TextStyle(color: Colors.white70),
         ),
         trailing: Text(
