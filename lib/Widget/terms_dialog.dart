@@ -58,7 +58,8 @@ class TermsDialog extends StatelessWidget {
                       Navigator.of(context).pop();
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const HomePage()),
+                        MaterialPageRoute(
+                            builder: (context) => const HomePage()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -79,91 +80,127 @@ class TermsDialog extends StatelessWidget {
     );
   }
 
-  String _getTermsText() {
-    return '''TERMO DE USO DO SISTEMA "POUPEX"
+  static String _getTermsText() {
+    return '''
+🧾 TERMO DE USO, POLÍTICA DE PRIVACIDADE E CONSENTIMENTO PARA TRATAMENTO DE DADOS PESSOAIS – POUPEX
 
-Este Termo de Uso ("Termo") é um acordo legal entre você, o(a) usuário(a) do sistema "POUPEX", e os desenvolvedores do Projeto "POUPEX" (doravante denominado "POUPEX" ou "Nós"), um sistema pensado para gestão financeira pessoal.
+Última atualização: 24 de outubro de 2025
 
-Ao acessar ou utilizar o "POUPEX", você manifesta sua concordância integral com este Termo de Uso, com a Política de Privacidade e com a Lei Geral de Proteção de Dados Pessoais (LGPD – Lei nº 13.709/2018). Se você não concordar com estes termos, não deverá utilizar o sistema.
+O presente documento reúne o Termo de Uso, a Política de Privacidade e o Termo de Consentimento para Tratamento de Dados Pessoais do sistema POUPEX, aplicativo de gestão financeira pessoal, desenvolvido com base na Lei nº 13.709/2018 – Lei Geral de Proteção de Dados Pessoais (LGPD) e nas normas ISO/IEC 27001, 27701 e 29100.
 
-CLÁUSULA PRIMEIRA – DAS CONDIÇÕES GERAIS DE USO
+Ao utilizar o sistema POUPEX, o(a) usuário(a) declara que leu, compreendeu e concorda integralmente com as disposições deste documento, autorizando expressamente o tratamento de seus dados pessoais conforme aqui descrito.
 
-O "POUPEX" é destinado ao controle e gestão de finanças pessoais, oferecendo funcionalidades de acompanhamento de receitas, despesas, metas financeiras e relatórios.
+📘 1. CONDIÇÕES GERAIS DE USO
 
-CLÁUSULA SEGUNDA – DA COLETA E USO DE DADOS PESSOAIS
+O POUPEX é um aplicativo multiplataforma, desenvolvido em Flutter, destinado ao controle e organização das finanças pessoais. O sistema oferece, entre outras, as seguintes funcionalidades:
 
-O usuário declara estar ciente da coleta e uso dos seguintes dados pelo "POUPEX", que visam exclusivamente o funcionamento da aplicação:
+• Controle de receitas e despesas;
+• Definição e acompanhamento de metas financeiras;
+• Dashboard e relatórios interativos;
+• Gestão de orçamentos mensais;
+• Dicas financeiras e sistema de recompensas;
+• Configurações personalizadas e login seguro.
 
-• Nome completo - para identificação do usuário
-• E-mail - para autenticação e comunicação
-• Telefone - para contato e recuperação de conta
-• Dados financeiros - para cálculos e relatórios
+O uso do aplicativo é pessoal, intransferível e não comercial, sendo vedada qualquer forma de uso indevido, redistribuição ou exploração ilícita.
 
-CLÁUSULA TERCEIRA – FINALIDADE DA COLETA
+🔒 2. COLETA E TRATAMENTO DE DADOS PESSOAIS
 
-A coleta dos dados mencionados tem finalidades específicas e essenciais para a operação do "POUPEX" e a conformidade com a LGPD:
+O titular autoriza expressamente o tratamento dos seguintes dados pessoais pelo POUPEX, conforme a LGPD:
 
-• Autenticação e controle de acesso
-• Personalização da experiência do usuário
-• Geração de relatórios financeiros
-• Comunicação sobre atualizações do sistema
+• Nome completo: identificação do usuário;
+• E-mail: autenticação e comunicação;
+• Telefone (opcional): recuperação de conta;
+• Dados financeiros: controle de receitas, despesas e metas;
+• Preferências: tema, moeda e notificações.
 
-CLÁUSULA QUARTA – VEDAÇÕES DO USO
+⚠️ Observação: mesmo que o sistema não colete dados sensíveis diretamente, tais informações podem estar contidas nos dados inseridos pelo usuário. O POUPEX aplica medidas reforçadas de segurança, em conformidade com a LGPD e normas ISO/IEC 27701 e 29100.
 
-O usuário compromete-se a não utilizar o "POUPEX" para qualquer finalidade ilícita ou que viole este Termo de Uso, incluindo:
+🎯 3. FINALIDADES DO TRATAMENTO
 
-• Carregar conteúdo ilegal, difamatório, obsceno ou prejudicial.
-• Acessar, alterar ou danificar contas de outros usuários.
-• Violar direitos de propriedade intelectual ou outros direitos de terceiros.
+Os dados pessoais serão utilizados exclusivamente para:
 
-CLÁUSULA QUINTA – ACEITAÇÃO IMPLÍCITA
+• Autenticação e controle de acesso;
+• Geração de relatórios e gráficos;
+• Personalização da experiência;
+• Armazenamento e sincronização de movimentações;
+• Comunicação operacional e suporte;
+• Auditoria e prevenção de incidentes.
 
-O uso do Sistema "POUPEX" implica em concordância integral e incondicional com este Termo de Uso.
+⚙️ 4. BASE LEGAL
 
-CLÁUSULA SEXTA – DA PROTEÇÃO DOS DADOS
+O tratamento se fundamenta em:
 
-O "POUPEX" compromete-se a adotar medidas técnicas e administrativas em conformidade com a LGPD:
+• Consentimento do titular (art. 7º, I);
+• Execução de contrato (art. 7º, V);
+• Cumprimento de obrigação legal (art. 7º, II);
+• Legítimo interesse (art. 7º, IX).
 
-• Criptografia dos arquivos armazenados.
-• Banco de dados seguro, com autenticação robusta e acesso restrito.
-• Políticas de segurança da informação e plano de resposta a incidentes.
+🚫 5. USOS PROIBIDOS
 
-CLÁUSULA SÉTIMA – DO COMPARTILHAMENTO DE DADOS
+É vedado ao usuário:
 
-Os dados armazenados não serão compartilhados com terceiros, exceto:
+• Inserir conteúdo ilegal, ofensivo ou difamatório;
+• Violar direitos de terceiros;
+• Manipular ou redistribuir o código do app;
+• Acessar dados de outros usuários;
+• Usar o sistema para fins comerciais não autorizados.
 
-• Quando autorizado expressamente pelo titular.
-• Mediante obrigação legal ou ordem judicial.
-• Para auxílio técnico restrito e necessário.
+🧱 6. SEGURANÇA E GOVERNANÇA
 
-CLÁUSULA OITAVA – DOS DIREITOS DO TITULAR DOS DADOS
+O POUPEX aplica boas práticas de segurança e privacidade, incluindo:
 
-Em conformidade com a LGPD, o sistema deve permitir ao usuário exercer seus direitos, incluindo:
+• Criptografia;
+• Controle de acesso restrito;
+• Logs e auditorias internas;
+• Anonimização de dados;
+• Políticas de confidencialidade e resposta a incidentes.
 
-• Exclusão da conta e dos arquivos.
-• Revogação do consentimento a qualquer momento.
-• Solicitação de informações sobre o uso de seus dados.
+🤝 7. COMPARTILHAMENTO DE DADOS
 
-CLÁUSULA NONA – DA RESPONSABILIDADE NA EXATIDÃO DOS DADOS
+Os dados não serão compartilhados com terceiros, salvo:
 
-O usuário é responsável pela exatidão, veracidade e atualização dos dados fornecidos.
+• Autorização expressa do titular;
+• Obrigações legais;
+• Suporte técnico sob confidencialidade.
 
-O "POUPEX" não se responsabiliza por inconsistências inseridas pelo usuário.
+👤 8. DIREITOS DO TITULAR
 
-CLÁUSULA DÉCIMA – DA TRANSPARÊNCIA
+O titular pode solicitar:
 
-O "POUPEX" garante a transparência sobre o tratamento dos dados pessoais.
+• Confirmação da existência de tratamento;
+• Acesso, correção ou exclusão de dados;
+• Portabilidade;
+• Revogação do consentimento;
+• Informações sobre compartilhamento.
 
-Os direitos dos usuários serão atendidos em até 48 horas para confirmação e até 15 dias para demandas complexas.
+🧾 9. CONTROLADOR E ENCARREGADO (DPO)
 
-CLÁUSULA DÉCIMA PRIMEIRA – DO TRATAMENTO DE DADOS DE CRIANÇAS E ADOLESCENTES
+Controlador: Projeto POUPEX
+Encarregado (DPO): [Nome do responsável]
+E-mail: [contato@poupex.com]
+Telefone: [opcional]
 
-O "POUPEX" observa as disposições do art. 14 da LGPD, quando aplicáveis, quanto ao tratamento de dados de crianças e adolescentes.
+👶 10. DADOS DE CRIANÇAS E ADOLESCENTES
 
-CLÁUSULA DÉCIMA SEGUNDA – DISPOSIÇÕES GERAIS
+• Dados de menores de 12 anos: apenas com consentimento dos pais;
+• Dados de adolescentes: sempre no melhor interesse do titular;
+• Medidas reforçadas: criptografia, controle de acesso e monitoramento.
 
-O presente Termo pode ser atualizado periodicamente para refletir mudanças legais ou operacionais.
+📞 11. CANAL DE COMUNICAÇÃO
 
-Este Termo é regido pela legislação brasileira e pela LGPD.''';
+Contato oficial:
+E-mail: [contato@poupex.com]
+Telefone: [opcional]
+
+🔄 12. ATUALIZAÇÕES
+
+Este documento poderá ser atualizado periodicamente, conforme alterações legais ou técnicas.
+
+⚖️ 13. LEGISLAÇÃO E FORO
+
+Regido pela legislação brasileira, especialmente a LGPD (Lei nº 13.709/2018). Foro: comarca do domicílio do titular.
+
+Ao usar o POUPEX, o usuário confirma seu consentimento livre, informado e inequívoco com este Termo de Uso, Política de Privacidade e Consentimento para Tratamento de Dados.
+''';
   }
 }

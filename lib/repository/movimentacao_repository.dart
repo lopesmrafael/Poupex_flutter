@@ -27,12 +27,21 @@ class MovimentacaoRepository {
     await _dataManager.deleteMovimentacao(id);
   }
 
-  Future<Map<String, double>> getResumoFinanceiro() async {
-    final stats = await _dataManager.getEstatisticas();
-    return {
-      'receitas': stats['totalReceitas']?.toDouble() ?? 0.0,
-      'despesas': stats['totalDespesas']?.toDouble() ?? 0.0,
-      'saldo': stats['saldo']?.toDouble() ?? 0.0,
-    };
-  }
+Future<Map<String, double>> getResumoFinanceiro() async {
+  final stats = await _dataManager.getEstatisticas();
+  return {
+    'receitas': stats['totalReceitas']?.toDouble() ?? 0.0,
+    'despesas': stats['totalDespesas']?.toDouble() ?? 0.0,
+    'saldo': stats['saldo']?.toDouble() ?? 0.0,
+  };
+}
+
+Future<Map<int, double>> getSaldoMensal() async {
+  return {
+    1: 5000.0,
+    2: 3500.0,
+    3: 4200.0,
+    // ...
+  };
+}
 }
