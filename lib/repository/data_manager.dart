@@ -14,7 +14,7 @@ class DataManager {
   static Map<String, List<Map<String, dynamic>>> _eventos = {};
   static Map<String, int> _pontos = {};
 
-  String get _userId => _auth.getCurrentUserId() ?? '';
+  String get _userId => _auth.getCurrentUserId()?.toString() ?? '';
 
   // Movimentações
   Future<void> addMovimentacao(Map<String, dynamic> movimentacao) async {

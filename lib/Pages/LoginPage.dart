@@ -3,6 +3,7 @@ import 'package:projeto_pity/Pages/CadastroPage.dart';
 import 'HomePage.dart';
 import '../Pages/redefinirSenhaPage.dart';
 import '../repository/auth_repository.dart';
+import '../repository/theme_manager.dart';
 
 void main() {
   runApp(const MyApp());
@@ -104,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF4C8C64),
+      backgroundColor: ThemeManager.backgroundColor,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 60),
@@ -119,13 +120,13 @@ class _LoginPageState extends State<LoginPage> {
                       height: 120,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       "POUPEX",
                       style: TextStyle(
                         fontSize: 20,
                         letterSpacing: 2,
                         fontWeight: FontWeight.w500,
-                        color: Colors.white,
+                        color: ThemeManager.textColor,
                       ),
                     ),
                   ],

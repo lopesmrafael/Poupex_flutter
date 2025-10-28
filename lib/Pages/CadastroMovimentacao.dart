@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../repository/movimentacao_repository.dart';
+import '../repository/theme_manager.dart';
 import 'ConfiguracoesPage.dart';
 import 'PerfilPage.dart';
 
@@ -278,7 +279,7 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF54A781),
+      backgroundColor: ThemeManager.backgroundColor,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.keyboard_backspace),
@@ -292,7 +293,7 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
           fit: BoxFit.contain,
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF327355),
+        backgroundColor: ThemeManager.appBarColor,
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -321,17 +322,17 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               "Histórico de Atividades",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: ThemeManager.textColor,
               ),
             ),
             const SizedBox(height: 12),
             Card(
-              color: const Color(0xFF6BB592),
+              color: ThemeManager.cardColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -459,7 +460,7 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
             const SizedBox(height: 8),
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFF3D8B6A),
+                color: ThemeManager.cardColor,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
@@ -487,12 +488,12 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               "Transações de Receitas e Despesas",
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: ThemeManager.textColor,
               ),
             ),
             const SizedBox(height: 8),
@@ -500,7 +501,7 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF3D8B6A),
+                color: ThemeManager.cardColor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../repository/auth_repository.dart';
+import '../repository/theme_manager.dart';
 
 class PerfilPage extends StatefulWidget {
   const PerfilPage({super.key});
@@ -26,17 +27,17 @@ class _PerfilPageState extends State<PerfilPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF54A781),
+      backgroundColor: ThemeManager.backgroundColor,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.keyboard_backspace, color: Colors.white),
+          icon: Icon(Icons.keyboard_backspace, color: ThemeManager.textColor),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Meu Perfil',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: ThemeManager.textColor, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: const Color(0xFF327355),
+        backgroundColor: ThemeManager.appBarColor,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -56,7 +57,7 @@ class _PerfilPageState extends State<PerfilPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF327355),
+        color: ThemeManager.cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -111,7 +112,7 @@ class _PerfilPageState extends State<PerfilPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF327355),
+        color: ThemeManager.cardColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

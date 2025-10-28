@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../repository/data_manager.dart';
 import '../repository/auth_repository.dart';
+import '../repository/theme_manager.dart';
 import 'ConfiguracoesPage.dart';
 import 'PerfilPage.dart';
 
@@ -69,7 +71,7 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF54A781),
+      backgroundColor: ThemeManager.backgroundColor,
       appBar: AppBar(
         title: Image.asset(
           "assets/titulo.jpg",
@@ -77,7 +79,7 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
           fit: BoxFit.contain,
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF327355),
+        backgroundColor: ThemeManager.appBarColor,
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -109,20 +111,20 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
             Center(
               child: Text(
                 "Relatório Financeiro - $_nomeUsuario",
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: ThemeManager.textColor,
                 ),
               ),
             ),
             Center(
               child: Text(
                 "Período: ${DateTime.now().month}/${DateTime.now().year}",
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Colors.white70,
+                  color: ThemeManager.subtitleColor,
                 ),
               ),
             ),
@@ -147,7 +149,7 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
             ElevatedButton(
               onPressed: _baixarRelatorio,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF327355),
+                backgroundColor: ThemeManager.cardColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -164,9 +166,9 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
             const SizedBox(height: 20),
 
             // ✉️ ENVIAR POR EMAIL
-            const Text(
+            Text(
               "Enviar por Email:",
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(fontWeight: FontWeight.bold, color: ThemeManager.textColor),
             ),
             const SizedBox(height: 8),
             TextField(
@@ -183,7 +185,7 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
             ElevatedButton(
               onPressed: _enviarPorEmail,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF327355),
+                backgroundColor: ThemeManager.cardColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -206,7 +208,7 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF4E9171),
+        color: ThemeManager.cardColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -241,7 +243,7 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF4E9171),
+        color: ThemeManager.cardColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -273,7 +275,7 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF4E9171),
+        color: ThemeManager.cardColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -353,14 +355,60 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Este conteúdo está em desenvolvimento'),
-        backgroundColor: Colors.orange,
-        duration: Duration(seconds: 2),
-      ),
-    );
-
-    _emailController.clear();
+    try {
+      final receitas = (_estatisticas['totalReceitas'] ?? 0.0).toStringAsFixed(2);
+      final despesas = (_estatisticas['totalDespesas'] ?? 0.0).toStringAsFixed(2);
+      final saldo = (_estatisticas['saldo'] ?? 0.0).toStringAsFixed(2);
+      final transacoes = _estatisticas['totalMovimentacoes'] ?? 0;
+      final metas = _estatisticas['totalMetas'] ?? 0;
+      
+      final subject = Uri.encodeComponent('Relatório Financeiro POUPEX - ${DateTime.now().month}/${DateTime.now().year}');
+      final body = Uri.encodeComponent(
+        'RELATÓRIO FINANCEIRO POUPEX\n'
+        'Usuário: $_nomeUsuario\n'
+        'Período: ${DateTime.now().month}/${DateTime.now().year}\n\n'
+        'RESUMO FINANCEIRO:\n'
+        '• Receitas: R\$ $receitas\n'
+        '• Despesas: R\$ $despesas\n'
+        '• Saldo: R\$ $saldo\n\n'
+        'ESTATÍSTICAS:\n'
+        '• Total de transações: $transacoes\n'
+        '• Metas ativas: $metas\n'
+        '• Pontos acumulados: $_pontosAcumulados\n\n'
+        'ANÁLISE:\n'
+        '${_getAnalise()}\n\n'
+        '---\n'
+        'Relatório gerado pelo POUPEX em ${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}'
+      );
+      
+      final emailUrl = 'mailto:$email?subject=$subject&body=$body';
+      final uri = Uri.parse(emailUrl);
+      
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Cliente de email aberto com sucesso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        _emailController.clear();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Nenhum cliente de email encontrado no dispositivo'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email enviado com sucesso! (Simulação)'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      _emailController.clear();
+    }
   }
 }

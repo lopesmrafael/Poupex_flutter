@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../repository/movimentacao_repository.dart';
 import '../repository/auth_repository.dart';
+import '../repository/theme_manager.dart';
 import 'ConfiguracoesPage.dart';
 import 'PerfilPage.dart';
 import 'package:intl/intl.dart';
@@ -23,14 +24,21 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
     'saldo': 0.0,
   };
   String _nomeUsuario = 'Usuário';
+  List<Map<String, dynamic>> _movimentacoes = [];
   Map<int, double> _saldosMensais = {};
+  List<FlSpot> _dadosGrafico = [];
 
   @override
   void initState() {
     super.initState();
-    _carregarResumoFinanceiro();
+    _carregarDados();
+  }
+
+  Future<void> _carregarDados() async {
+    await _carregarMovimentacoes();
+    await _carregarResumoFinanceiro();
     _carregarNomeUsuario();
-    _carregarSaldosMensais();
+    _gerarDadosGrafico();
   }
 
   Future<void> _carregarResumoFinanceiro() async {
@@ -55,17 +63,63 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
     }
   }
 
-  Future<void> _carregarSaldosMensais() async {
+  Future<void> _carregarMovimentacoes() async {
     try {
-      final resultado = await _movimentacaoRepository.getSaldoMensal(); // deve retornar Map<int, double>
-      if (resultado is Map<int, double>) {
-        setState(() {
-          _saldosMensais = resultado;
-        });
-      }
+      final movimentacoes = await _movimentacaoRepository.getMovimentacoes();
+      setState(() {
+        _movimentacoes = movimentacoes;
+      });
     } catch (e) {
-      print("Erro ao carregar saldos mensais: $e");
+      print("Erro ao carregar movimentações: $e");
     }
+  }
+
+  void _gerarDadosGrafico() {
+    Map<int, double> saldoPorMes = {};
+    
+    // Calcular saldo por mês
+    for (var mov in _movimentacoes) {
+      try {
+        DateTime data;
+        if (mov['data'] is String) {
+          data = DateTime.parse(mov['data']);
+        } else {
+          data = DateTime.now();
+        }
+        
+        int mes = data.month;
+        double valor = (mov['valor'] is num) ? mov['valor'].toDouble() : 0.0;
+        
+        if (mov['tipo'] == 'receita') {
+          saldoPorMes[mes] = (saldoPorMes[mes] ?? 0.0) + valor;
+        } else if (mov['tipo'] == 'despesa') {
+          saldoPorMes[mes] = (saldoPorMes[mes] ?? 0.0) - valor;
+        }
+      } catch (e) {
+        print('Erro ao processar movimentação: $e');
+      }
+    }
+    
+    // Gerar pontos do gráfico
+    List<FlSpot> spots = [];
+    
+    if (saldoPorMes.isEmpty) {
+      // Gráfico vazio
+      for (int mes = 0; mes < 6; mes++) {
+        spots.add(FlSpot(mes.toDouble(), 0));
+      }
+    } else {
+      double saldoAcumulado = 0;
+      for (int mes = 1; mes <= 12; mes++) {
+        saldoAcumulado += saldoPorMes[mes] ?? 0.0;
+        spots.add(FlSpot(mes.toDouble() - 1, saldoAcumulado));
+      }
+    }
+    
+    setState(() {
+      _dadosGrafico = spots;
+      _saldosMensais = saldoPorMes;
+    });
   }
 
   @override
@@ -77,21 +131,33 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xFF54A781),
+      backgroundColor: ThemeManager.backgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           "Poupe✖",
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: ThemeManager.textColor,
           ),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF327355),
+        backgroundColor: ThemeManager.appBarColor,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, color: Colors.black),
+            icon: Icon(Icons.refresh, color: ThemeManager.textColor),
+            onPressed: () {
+              _carregarDados();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Dados atualizados!'),
+                  duration: Duration(seconds: 1),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.settings, color: ThemeManager.textColor),
             onPressed: () {
               Navigator.push(
                 context,
@@ -100,7 +166,7 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.person, color: Colors.black),
+            icon: Icon(Icons.person, color: ThemeManager.textColor),
             onPressed: () {
               Navigator.push(
                 context,
@@ -117,25 +183,25 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
           children: [
             Text(
               "Dashboard Financeiro - $_nomeUsuario",
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
-                color: Colors.white,
+                color: ThemeManager.textColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
+            Text(
               "Aqui estão seus dados financeiros\nde forma clara e organizada.",
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white70, fontSize: 16),
+              style: TextStyle(color: ThemeManager.subtitleColor, fontSize: 16),
             ),
             const SizedBox(height: 20),
             Text(
               "R\$ ${_resumoFinanceiro['saldo']!.toStringAsFixed(2)}",
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: ThemeManager.textColor,
               ),
             ),
             Text(
@@ -157,15 +223,45 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
               height: 180,
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFF327355),
+                color: ThemeManager.cardColor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: LineChart(
                 LineChartData(
-                  gridData: FlGridData(show: true),
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: true,
+                    drawHorizontalLine: true,
+                    horizontalInterval: (_resumoFinanceiro['saldo']!.abs() > 0 ? _resumoFinanceiro['saldo']!.abs() / 4 : 1000),
+                    getDrawingHorizontalLine: (value) {
+                      return FlLine(
+                        color: Colors.white.withOpacity(0.2),
+                        strokeWidth: 1,
+                      );
+                    },
+                    getDrawingVerticalLine: (value) {
+                      return FlLine(
+                        color: Colors.white.withOpacity(0.2),
+                        strokeWidth: 1,
+                      );
+                    },
+                  ),
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false)),
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 50,
+                        getTitlesWidget: (value, meta) {
+                          return Text(
+                            'R\$${value.toStringAsFixed(0)}',
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 10,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                     rightTitles: AxisTitles(
                         sideTitles: SideTitles(showTitles: false)),
                     topTitles: AxisTitles(
@@ -176,9 +272,11 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
                         reservedSize: 22,
                         getTitlesWidget: (value, meta) {
                           int index = value.toInt();
-                          if (index >= 0 && index < meses.length) {
+                          if (index >= 0 && index < 12) {
+                            final mesesAbrev = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 
+                                               'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
                             return Text(
-                              meses[index].substring(0, 3).toUpperCase(),
+                              mesesAbrev[index],
                               style: const TextStyle(
                                   color: Colors.white, fontSize: 10),
                             );
@@ -191,14 +289,29 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
                   borderData: FlBorderData(show: false),
                   lineBarsData: [
                     LineChartBarData(
-                      spots: _saldosMensais.entries
-                          .map((e) => FlSpot(
-                              e.key.toDouble() - 1, e.value.toDouble()))
-                          .toList(),
+                      spots: _dadosGrafico,
                       isCurved: true,
-                      color: Colors.lightGreenAccent,
+                      color: _resumoFinanceiro['saldo']! >= 0 
+                          ? Colors.lightGreenAccent 
+                          : Colors.redAccent,
                       barWidth: 3,
-                      dotData: FlDotData(show: false),
+                      dotData: FlDotData(
+                        show: true,
+                        getDotPainter: (spot, percent, barData, index) {
+                          return FlDotCirclePainter(
+                            radius: 4,
+                            color: Colors.white,
+                            strokeWidth: 2,
+                            strokeColor: barData.color ?? Colors.blue,
+                          );
+                        },
+                      ),
+                      belowBarData: BarAreaData(
+                        show: true,
+                        color: (_resumoFinanceiro['saldo']! >= 0 
+                            ? Colors.lightGreenAccent 
+                            : Colors.redAccent).withOpacity(0.1),
+                      ),
                     ),
                   ],
                 ),
@@ -229,33 +342,71 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
             ),
             const SizedBox(height: 20),
 
-            // === Lista Mensal Dinâmica ===
+            // === Resumo de Movimentações Recentes ===
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF327355),
+                  color: ThemeManager.cardColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: ListView.builder(
-                  itemCount: mesAtual,
-                  itemBuilder: (context, index) {
-                    final mes = meses[index];
-                    final valor =
-                        _saldosMensais[index + 1]?.toStringAsFixed(2) ?? "0.00";
-                    final status = (index + 1) < mesAtual
-                        ? "Completo"
-                        : (index + 1) == mesAtual
-                            ? "Em andamento"
-                            : "Pendente";
-                    final cor = status == "Em andamento"
-                        ? Colors.orange
-                        : status == "Pendente"
-                            ? Colors.grey
-                            : Colors.green;
-
-                    return projetoItem(mes, valor, status, cor);
-                  },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Movimentações Recentes',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: _movimentacoes.isEmpty
+                          ? const Center(
+                              child: Text(
+                                'Nenhuma movimentação encontrada\nCadastre suas primeiras transações!',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.white70),
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: _movimentacoes.length > 5 ? 5 : _movimentacoes.length,
+                              itemBuilder: (context, index) {
+                                final mov = _movimentacoes[index];
+                                final isReceita = mov['tipo'] == 'receita';
+                                final valor = mov['valor']?.toDouble() ?? 0.0;
+                                
+                                return Card(
+                                  color: Colors.white10,
+                                  margin: const EdgeInsets.symmetric(vertical: 4),
+                                  child: ListTile(
+                                    leading: Icon(
+                                      isReceita ? Icons.arrow_upward : Icons.arrow_downward,
+                                      color: isReceita ? Colors.green : Colors.red,
+                                    ),
+                                    title: Text(
+                                      mov['descricao'] ?? 'Sem descrição',
+                                      style: const TextStyle(color: Colors.white),
+                                    ),
+                                    subtitle: Text(
+                                      mov['categoria'] ?? 'Geral',
+                                      style: const TextStyle(color: Colors.white70),
+                                    ),
+                                    trailing: Text(
+                                      '${isReceita ? '+' : '-'}R\$ ${valor.toStringAsFixed(2)}',
+                                      style: TextStyle(
+                                        color: isReceita ? Colors.green : Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -272,7 +423,7 @@ Widget cardInfo(
     width: 150,
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
-      color: const Color(0xFF327355),
+      color: ThemeManager.cardColor,
       borderRadius: BorderRadius.circular(12),
     ),
     child: Column(
