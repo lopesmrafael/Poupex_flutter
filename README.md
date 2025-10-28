@@ -136,7 +136,57 @@ lib/
 │
 └── main.dart                         # Ponto de entrada
 ```
+## **Padrões de Projeto (GoF) aplicados**
 
+🧩 **1. Singleton**
+- Arquivo:
+lib/repository/data_manager.dart
+- Evidência:
+Contém instância estática e uso de factory para garantir apenas um objeto global do tipo DataManager.
+- 👉 Usado para centralizar o gerenciamento de dados do app (evita múltiplas instâncias).
+
+🏭 **2. Factory Method**
+- Arquivos:
+lib/firebase_options.dart
+lib/Model/meta_financeira.dart
+lib/Pages/metas_financeirasPage.dart
+lib/repository/data_manager.dart
+- Evidência:
+Uso de factory constructors e switch para criar objetos com base em condições ou parâmetros.
+- 👉 Facilita a criação de instâncias configuradas dinamicamente, sem expor lógica complexa.
+
+🧱 **3. Builder**
+- Arquivos (muitos):
+lib/main.dart
+Todas as páginas em lib/Pages/ e vários Widget/
+- Evidência:
+O Flutter utiliza fortemente o padrão Builder, pois cada Widget constrói parte da interface com um método build().
+- 👉 Esse padrão organiza a criação de interfaces complexas a partir de componentes simples e reutilizáveis.
+
+🔄 **4. State**
+- Arquivos:
+main.dart e praticamente todas as Pages/
+- Evidência:
+Uso extensivo de StatefulWidget e setState().
+- 👉 Implementa o padrão State, permitindo que a UI mude dinamicamente conforme o estado interno.
+
+🎯 **5. Strategy**
+- Arquivo:
+lib/Model/reward.dart
+- Evidência:
+Uso de classes abstratas e implementação de comportamentos diferentes conforme o tipo de reward (recompensa).
+- 👉 Encapsula comportamentos intercambiáveis, permitindo variar estratégias de forma dinâmica.
+
+🗃️ **6. Repository**
+- Arquivos:
+Todos os arquivos em lib/repository/
+- Evidência:
+Cada repositório (auth_repository.dart, movimentacao_repository.dart, meta_financeira_repository.dart, etc.) centraliza o acesso a dados (Firebase, local storage, etc.).
+- 👉 Esse padrão separa a lógica de negócios da lógica de persistência, facilitando manutenção e testes.
+
+
+
+📋 Resumo Geral
 ## 🔧 Backend Robusto
 
 ### 🏗️ **Arquitetura em Camadas**
