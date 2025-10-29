@@ -138,7 +138,7 @@ lib/
 ```
 ## **Padrões de Projeto (GoF) aplicados**
 
-🧩 **1. Singleton**
+🧩 **1. EventBus: Observer + Singleton**
 - Arquivo:
 lib/repository/data_manager.dart
 - Evidência:
