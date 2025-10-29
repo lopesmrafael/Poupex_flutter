@@ -145,16 +145,6 @@ lib/repository/data_manager.dart
 Contém instância estática e uso de factory para garantir apenas um objeto global do tipo DataManager.
 - 👉 Usado para centralizar o gerenciamento de dados do app (evita múltiplas instâncias).
 
-🏭 **2. Factory Method**
-- Arquivos:
-lib/firebase_options.dart
-lib/Model/meta_financeira.dart
-lib/Pages/metas_financeirasPage.dart
-lib/repository/data_manager.dart
-- Evidência:
-Uso de factory constructors e switch para criar objetos com base em condições ou parâmetros.
-- 👉 Facilita a criação de instâncias configuradas dinamicamente, sem expor lógica complexa.
-
 🧱 **3. Builder**
 - Arquivos (muitos):
 lib/main.dart
@@ -169,13 +159,6 @@ main.dart e praticamente todas as Pages/
 - Evidência:
 Uso extensivo de StatefulWidget e setState().
 - 👉 Implementa o padrão State, permitindo que a UI mude dinamicamente conforme o estado interno.
-
-🎯 **5. Strategy**
-- Arquivo:
-lib/Model/reward.dart
-- Evidência:
-Uso de classes abstratas e implementação de comportamentos diferentes conforme o tipo de reward (recompensa).
-- 👉 Encapsula comportamentos intercambiáveis, permitindo variar estratégias de forma dinâmica.
 
 🗃️ **6. Repository**
 - Arquivos:
