@@ -31,22 +31,23 @@ class DefaultFirebaseOptions {
     }
   }
 
-  // Configurações de teste - substitua pelas suas configurações reais
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'demo-api-key',
-    appId: 'demo-app-id',
-    messagingSenderId: '123456789',
-    projectId: 'demo-poupex-test',
-    authDomain: 'demo-poupex-test.firebaseapp.com',
-    storageBucket: 'demo-poupex-test.appspot.com',
+    apiKey: 'AIzaSyBf1vhEOJfD-7lM24cq7qEfX_8_ArvQ3QM',
+    appId: '1:678186919993:web:b183a0627d38b3f4cdc5e8',
+    messagingSenderId: '678186919993',
+    projectId: 'fpoupex-app',
+    authDomain: 'fpoupex-app.firebaseapp.com',
+    storageBucket: 'fpoupex-app.firebasestorage.app',
   );
 
+  // Configurações de teste - substitua pelas suas configurações reais
+
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'demo-api-key',
-    appId: 'demo-app-id',
-    messagingSenderId: '123456789',
-    projectId: 'demo-poupex-test',
-    storageBucket: 'demo-poupex-test.appspot.com',
+    apiKey: 'AIzaSyBt_zbZTPCghB0KaKykwZ0qWiFBjADR0Mg',
+    appId: '1:678186919993:android:1d8660122d6196f4cdc5e8',
+    messagingSenderId: '678186919993',
+    projectId: 'fpoupex-app',
+    storageBucket: 'fpoupex-app.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -68,11 +69,12 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'demo-api-key',
-    appId: 'demo-app-id',
-    messagingSenderId: '123456789',
-    projectId: 'demo-poupex-test',
-    authDomain: 'demo-poupex-test.firebaseapp.com',
-    storageBucket: 'demo-poupex-test.appspot.com',
+    apiKey: 'AIzaSyBf1vhEOJfD-7lM24cq7qEfX_8_ArvQ3QM',
+    appId: '1:678186919993:web:0cee4a3d6c0f75e4cdc5e8',
+    messagingSenderId: '678186919993',
+    projectId: 'fpoupex-app',
+    authDomain: 'fpoupex-app.firebaseapp.com',
+    storageBucket: 'fpoupex-app.firebasestorage.app',
   );
+
 }

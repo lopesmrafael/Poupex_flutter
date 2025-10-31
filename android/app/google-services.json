@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "123456789",
-    "project_id": "demo-poupex-test",
-    "storage_bucket": "demo-poupex-test.appspot.com"
+    "project_number": "678186919993",
+    "project_id": "fpoupex-app",
+    "storage_bucket": "fpoupex-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:123456789:android:demo-app-id",
+        "mobilesdk_app_id": "1:678186919993:android:1d8660122d6196f4cdc5e8",
         "android_client_info": {
           "package_name": "com.example.projeto_pity"
         }
       },
       "oauth_client": [
         {
-          "client_id": "123456789-demo.apps.googleusercontent.com",
+          "client_id": "678186919993-6u417ofooa37u1n356dsbntjj9mftmts.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "demo-api-key"
+          "current_key": "AIzaSyBt_zbZTPCghB0KaKykwZ0qWiFBjADR0Mg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "123456789-demo.apps.googleusercontent.com",
+              "client_id": "678186919993-6u417ofooa37u1n356dsbntjj9mftmts.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
