@@ -1,18 +1,18 @@
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthRepository {
-  static String? _currentUserId;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
+  // Fallback local para quando Firebase não estiver disponível
+  static Map<String, Map<String, dynamic>> _localUsers = {};
   static Map<String, dynamic>? _currentUser;
-  static Map<String, Map<String, dynamic>> _users = {};
-  static const String _usersKey = 'poupex_users';
-  static const String _currentUserKey = 'poupex_current_user';
+  
+  User? get currentUser => _auth.currentUser;
 
   Future<Map<String, dynamic>?> signIn(String email, String password) async {
     try {
-      await _loadUsers();
-      await Future.delayed(Duration(milliseconds: 500));
-      
       if (email.isEmpty || password.isEmpty) {
         throw Exception('Email e senha são obrigatórios');
       }
@@ -21,30 +21,52 @@ class AuthRepository {
         throw Exception('Email inválido');
       }
 
-      String userId = 'user_${email.hashCode}';
-      if (_users.containsKey(userId)) {
-        Map<String, dynamic> userData = _users[userId]!;
-        if (userData['password'] == password) {
-          _currentUserId = userId;
-          _currentUser = Map.from(userData)..remove('password');
-          await _saveCurrentUser();
-          return _currentUser;
-        } else {
-          throw Exception('Senha incorreta');
+      // Tentar Firebase primeiro
+      try {
+        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+
+        if (userCredential.user != null) {
+          DocumentSnapshot userDoc = await _firestore
+              .collection('users')
+              .doc(userCredential.user!.uid)
+              .get();
+
+          if (userDoc.exists) {
+            _currentUser = {
+              'uid': userCredential.user!.uid,
+              'email': userCredential.user!.email,
+              'displayName': userDoc.get('displayName') ?? '',
+              'telefone': userDoc.get('telefone') ?? '',
+            };
+            return _currentUser;
+          }
         }
-      } else {
-        throw Exception('Usuário não encontrado');
+      } catch (firebaseError) {
+        // Se Firebase falhar, usar sistema local
+        String userId = 'user_${email.hashCode}';
+        if (_localUsers.containsKey(userId)) {
+          Map<String, dynamic> userData = _localUsers[userId]!;
+          if (userData['password'] == password) {
+            _currentUser = Map.from(userData)..remove('password');
+            return _currentUser;
+          } else {
+            throw Exception('Senha incorreta');
+          }
+        } else {
+          throw Exception('Usuário não encontrado');
+        }
       }
+      return null;
     } catch (e) {
-      throw Exception('Erro ao fazer login: ${e.toString().replaceAll('Exception: ', '')}');
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
   Future<Map<String, dynamic>?> signUp(String email, String password, String nome, String telefone) async {
     try {
-      await _loadUsers();
-      await Future.delayed(Duration(milliseconds: 500));
-      
       if (email.isEmpty || password.isEmpty || nome.isEmpty) {
         throw Exception('Todos os campos são obrigatórios');
       }
@@ -57,105 +79,139 @@ class AuthRepository {
         throw Exception('Senha deve ter pelo menos 6 caracteres');
       }
 
-      String userId = 'user_${email.hashCode}';
-      
-      if (_users.containsKey(userId)) {
-        throw Exception('Usuário já cadastrado');
+      // Tentar Firebase primeiro
+      try {
+        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+
+        if (userCredential.user != null) {
+          await _firestore.collection('users').doc(userCredential.user!.uid).set({
+            'email': email,
+            'displayName': nome,
+            'telefone': telefone,
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+
+          _currentUser = {
+            'uid': userCredential.user!.uid,
+            'email': email,
+            'displayName': nome,
+            'telefone': telefone,
+          };
+          return _currentUser;
+        }
+      } catch (firebaseError) {
+        // Se Firebase falhar, usar sistema local
+        String userId = 'user_${email.hashCode}';
+        
+        if (_localUsers.containsKey(userId)) {
+          throw Exception('Usuário já cadastrado');
+        }
+
+        Map<String, dynamic> userData = {
+          'uid': userId,
+          'email': email,
+          'displayName': nome,
+          'telefone': telefone,
+          'password': password,
+          'createdAt': DateTime.now().toIso8601String(),
+        };
+
+        _localUsers[userId] = userData;
+        _currentUser = Map.from(userData)..remove('password');
+        return _currentUser;
       }
-
-      Map<String, dynamic> userData = {
-        'uid': userId,
-        'email': email,
-        'displayName': nome,
-        'telefone': telefone,
-        'password': password,
-        'createdAt': DateTime.now().toIso8601String(),
-      };
-
-      _users[userId] = userData;
-      await _saveUsers();
-      
-      _currentUserId = userId;
-      _currentUser = Map.from(userData)..remove('password');
-      await _saveCurrentUser();
-      
-      return _currentUser;
+      return null;
     } catch (e) {
-      throw Exception('Erro ao criar conta: ${e.toString().replaceAll('Exception: ', '')}');
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
   Future<void> signOut() async {
-    await Future.delayed(Duration(milliseconds: 200));
-    _currentUserId = null;
+    try {
+      await _auth.signOut();
+    } catch (e) {
+      // Se Firebase falhar, limpar dados locais
+    }
     _currentUser = null;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_currentUserKey);
   }
 
   Future<void> resetPassword(String email) async {
-    await Future.delayed(Duration(milliseconds: 500));
-    if (email.isEmpty || !email.contains('@')) {
-      throw Exception('Email inválido');
+    try {
+      if (email.isEmpty || !email.contains('@')) {
+        throw Exception('Email inválido');
+      }
+      await _auth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'user-not-found':
+          throw Exception('Usuário não encontrado');
+        case 'invalid-email':
+          throw Exception('Email inválido');
+        default:
+          throw Exception('Erro ao enviar email: ${e.message}');
+      }
     }
-    // Simula envio de email
   }
 
-  Map<String, dynamic>? getCurrentUser() {
+  Future<Map<String, dynamic>?> getCurrentUser() async {
+    // Tentar Firebase primeiro
+    if (_auth.currentUser != null) {
+      try {
+        DocumentSnapshot userDoc = await _firestore
+            .collection('users')
+            .doc(_auth.currentUser!.uid)
+            .get();
+        
+        if (userDoc.exists) {
+          return {
+            'uid': _auth.currentUser!.uid,
+            'email': _auth.currentUser!.email,
+            'displayName': userDoc.get('displayName') ?? '',
+            'telefone': userDoc.get('telefone') ?? '',
+          };
+        }
+      } catch (e) {
+        // Se Firebase falhar, usar dados locais
+      }
+    }
+    
+    // Fallback para dados locais
     return _currentUser;
   }
 
   String? getCurrentUserId() {
-    return _currentUserId;
+    return _auth.currentUser?.uid ?? _currentUser?['uid'];
   }
 
   bool isLoggedIn() {
-    return _currentUserId != null && _currentUser != null;
+    return _auth.currentUser != null || _currentUser != null;
   }
 
   Future<void> updateProfile({String? nome, String? telefone}) async {
     if (!isLoggedIn()) throw Exception('Usuário não logado');
     
-    await Future.delayed(Duration(milliseconds: 300));
+    Map<String, dynamic> updates = {};
     
     if (nome != null) {
-      _currentUser!['displayName'] = nome;
-      _users[_currentUserId!]!['displayName'] = nome;
+      updates['displayName'] = nome;
     }
     
     if (telefone != null) {
-      _currentUser!['telefone'] = telefone;
-      _users[_currentUserId!]!['telefone'] = telefone;
+      updates['telefone'] = telefone;
     }
-  }
-
-  Future<void> _loadUsers() async {
-    final prefs = await SharedPreferences.getInstance();
-    final usersJson = prefs.getString(_usersKey);
-    if (usersJson != null) {
-      final Map<String, dynamic> decoded = json.decode(usersJson);
-      _users = decoded.map((key, value) => MapEntry(key, Map<String, dynamic>.from(value)));
-    }
-  }
-
-  Future<void> _saveUsers() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_usersKey, json.encode(_users));
-  }
-
-  Future<void> _saveCurrentUser() async {
-    if (_currentUser != null) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_currentUserKey, json.encode(_currentUser));
+    
+    if (updates.isNotEmpty) {
+      await _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .update(updates);
     }
   }
 
   Future<void> loadCurrentUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userJson = prefs.getString(_currentUserKey);
-    if (userJson != null) {
-      _currentUser = Map<String, dynamic>.from(json.decode(userJson));
-      _currentUserId = _currentUser!['uid'];
-    }
+    // Firebase Auth mantém o estado automaticamente
   }
 }

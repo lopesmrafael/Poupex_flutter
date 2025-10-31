@@ -5,7 +5,7 @@ import '../repository/auth_repository.dart';
 import '../repository/theme_manager.dart';
 import 'ConfiguracoesPage.dart';
 import 'PerfilPage.dart';
-import 'package:intl/intl.dart';
+
 
 class DashboardFinanPage extends StatefulWidget {
   const DashboardFinanPage({super.key});
@@ -25,7 +25,7 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
   };
   String _nomeUsuario = 'Usuário';
   List<Map<String, dynamic>> _movimentacoes = [];
-  Map<int, double> _saldosMensais = {};
+
   List<FlSpot> _dadosGrafico = [];
 
   @override
@@ -37,7 +37,7 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
   Future<void> _carregarDados() async {
     await _carregarMovimentacoes();
     await _carregarResumoFinanceiro();
-    _carregarNomeUsuario();
+    await _carregarNomeUsuario();
     _gerarDadosGrafico();
   }
 
@@ -54,8 +54,8 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
     }
   }
 
-  void _carregarNomeUsuario() {
-    final user = _authRepository.getCurrentUser();
+  Future<void> _carregarNomeUsuario() async {
+    final user = await _authRepository.getCurrentUser();
     if (user != null && user['displayName'] != null) {
       setState(() {
         _nomeUsuario = user['displayName'];
@@ -118,7 +118,6 @@ class _DashboardFinanPageState extends State<DashboardFinanPage> {
     
     setState(() {
       _dadosGrafico = spots;
-      _saldosMensais = saldoPorMes;
     });
   }
 

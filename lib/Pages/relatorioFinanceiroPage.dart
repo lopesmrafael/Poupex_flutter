@@ -59,7 +59,7 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
   Future<void> _carregarDados() async {
     try {
       _estatisticas = await _dataManager.getEstatisticas();
-      final usuario = _authRepository.getCurrentUser();
+      final usuario = await _authRepository.getCurrentUser();
       _nomeUsuario = usuario?['displayName'] ?? 'Usuário';
       _pontosAcumulados = await _pontosRepository.getPontos();
       setState(() {});

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import '../repository/auth_repository.dart';
 import '../Widget/terms_dialog.dart';
+import 'HomePage.dart';
 
 class CadastroPage extends StatefulWidget {
   const CadastroPage({super.key});
@@ -82,29 +83,27 @@ class _CadastroPageState extends State<CadastroPage> {
 
     try {
       // 🔹 Cria conta + salva no Firestore
-      await _authRepository.signUp(email, senha, nome, telefone);
+      final user = await _authRepository.signUp(email, senha, nome, telefone);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cadastro realizado com sucesso!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Cadastro realizado com sucesso!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 1),
+          ),
+        );
 
-      // Limpa campos
-      _nomeController.clear();
-      _emailController.clear();
-      _telefoneController.clear();
-      _senhaController.clear();
-
-      // Espera um pouco e exibe termos
-      await Future.delayed(const Duration(seconds: 1));
-
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const TermsDialog(),
-      );
+        // Aguarda um pouco e vai direto para HomePage
+        await Future.delayed(const Duration(seconds: 1));
+        
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const TermsDialog()),
+          );
+        }
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -55,11 +55,14 @@ class TermsDialog extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      // Remove todas as telas anteriores e vai para HomePage
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/',
+                        (route) => false,
+                      );
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomePage()),
+                        MaterialPageRoute(builder: (context) => const HomePage()),
                       );
                     },
                     style: ElevatedButton.styleFrom(

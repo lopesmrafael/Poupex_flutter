@@ -19,8 +19,8 @@ class _PerfilPageState extends State<PerfilPage> {
     _carregarDados();
   }
 
-  void _carregarDados() {
-    _usuario = _authRepository.getCurrentUser();
+  void _carregarDados() async {
+    _usuario = await _authRepository.getCurrentUser();
     setState(() {});
   }
 
