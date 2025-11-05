@@ -10,7 +10,7 @@ class DicasRepository {
       'titulo': 'Organização Financeira',
       'descricao': 'Elabore um orçamento mensal detalhado. Registre todas as receitas e despesas para ter controle total.',
       'categoria': 'planejamento',
-      'icone': 'assets/iconsDicas/organizacao.png',
+      'icone': 'assets/iconsDicas/organizacao_financeira.png',
     },
     {
       'titulo': 'Reserva de Emergência',
@@ -40,13 +40,13 @@ class DicasRepository {
       'titulo': 'Cartão de Crédito',
       'descricao': 'Use com responsabilidade. Pague sempre o valor total da fatura para evitar juros altos.',
       'categoria': 'credito',
-      'icone': 'assets/iconsDicas/cartao_credito.png',
+      'icone': 'assets/iconsDicas/cartao.png',
     },
     {
       'titulo': 'Metas Financeiras',
       'descricao': 'Defina objetivos claros e prazos realistas. Metas específicas motivam mais que desejos vagos.',
       'categoria': 'metas',
-      'icone': 'assets/iconsDicas/metas.png',
+      'icone': 'assets/iconsDicas/meta.png',
     },
     {
       'titulo': 'Aposentadoria',
@@ -58,7 +58,7 @@ class DicasRepository {
       'titulo': 'Negociação de Dívidas',
       'descricao': 'Se estiver endividado, negocie. Muitas empresas oferecem descontos para pagamento à vista.',
       'categoria': 'dividas',
-      'icone': 'assets/iconsDicas/negociacao.png',
+      'icone': 'assets/iconsDicas/dividas.png',
     },
   ];
 
