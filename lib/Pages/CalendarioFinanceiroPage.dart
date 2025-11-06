@@ -127,10 +127,13 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
     return Scaffold(
       backgroundColor: ThemeManager.backgroundColor,
       appBar: AppBar(
-        title: Image.asset(
-          "assets/titulo.jpg",
-          height: 40,
-          fit: BoxFit.contain,
+        title: Text(
+          "Poupe✖",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: ThemeManager.textColor,
+          ),
         ),
         backgroundColor: ThemeManager.appBarColor,
         elevation: 0,

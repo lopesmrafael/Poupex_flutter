@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../repository/orcamento_repository_simple.dart';
 import '../repository/theme_manager.dart';
+import '../repository/achievement_system.dart';
 
 class OrcamentoMensal extends StatefulWidget {
   const OrcamentoMensal({super.key});
@@ -11,6 +12,7 @@ class OrcamentoMensal extends StatefulWidget {
 
 class _OrcamentoMensalState extends State<OrcamentoMensal> {
   final OrcamentoRepositorySimple _repository = OrcamentoRepositorySimple();
+  final AchievementSystem _achievementSystem = AchievementSystem();
   
   // Controllers para renda
   final TextEditingController rendaDescController = TextEditingController();
@@ -88,9 +90,26 @@ class _OrcamentoMensalState extends State<OrcamentoMensal> {
         variavelValorController.clear();
       });
       
+      // Verificar conquistas
+      final novasConquistas = await _achievementSystem.verificarOrcamento();
+      
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Orçamento salvo com sucesso!')),
       );
+      
+      // Mostrar conquistas desbloqueadas
+      for (String conquistaId in novasConquistas) {
+        final conquista = AchievementSystem.conquistas[conquistaId];
+        if (conquista != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('🏆 Conquista: ${conquista['titulo']}! +${conquista['pontos']} pontos'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erro: $e')),
@@ -103,10 +122,13 @@ class _OrcamentoMensalState extends State<OrcamentoMensal> {
     return Scaffold(
       backgroundColor: ThemeManager.backgroundColor,
       appBar: AppBar(
-        title: Image.asset(
-          "assets/titulo.jpg",
-          height: 40,
-          fit: BoxFit.contain,
+        title: Text(
+          "Poupe✖",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: ThemeManager.textColor,
+          ),
         ),
         centerTitle: true,
         backgroundColor: ThemeManager.appBarColor,

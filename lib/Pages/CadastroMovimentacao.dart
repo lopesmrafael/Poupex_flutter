@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../repository/movimentacao_repository.dart';
 import '../repository/theme_manager.dart';
+import '../repository/achievement_system.dart';
 import 'ConfiguracoesPage.dart';
 import 'PerfilPage.dart';
 
@@ -17,6 +18,7 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
   final valorController = TextEditingController();
   final dataController = TextEditingController();
   final MovimentacaoRepository _repository = MovimentacaoRepository();
+  final AchievementSystem _achievementSystem = AchievementSystem();
 
   String? tipoSelecionado;
   DateTime dataSelecionada = DateTime.now();
@@ -100,9 +102,26 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
       _atualizarDataHoraTexto();
       _carregarTransacoes();
 
+      // Verificar conquistas
+      final novasConquistas = await _achievementSystem.verificarTransacao();
+      
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Movimentação cadastrada!")),
       );
+      
+      // Mostrar conquistas desbloqueadas
+      for (String conquistaId in novasConquistas) {
+        final conquista = AchievementSystem.conquistas[conquistaId];
+        if (conquista != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('🏆 Conquista desbloqueada: ${conquista['titulo']}! +${conquista['pontos']} pontos'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Erro: $e")),
@@ -259,10 +278,28 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
                         );
                         
                         _carregarTransacoes();
+                        
+                        // Verificar conquistas
+                        final novasConquistas = await _achievementSystem.verificarTransacao();
+                        
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Depósito personalizado cadastrado!')),
                         );
+                        
+                        // Mostrar conquistas desbloqueadas
+                        for (String conquistaId in novasConquistas) {
+                          final conquista = AchievementSystem.conquistas[conquistaId];
+                          if (conquista != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('🏆 Conquista: ${conquista['titulo']}! +${conquista['pontos']} pontos'),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          }
+                        }
                       }
                     }
                   },
@@ -287,10 +324,13 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
             Navigator.pop(context);
           },
         ),
-        title: Image.asset(
-          "assets/titulo.jpg",
-          height: 40,
-          fit: BoxFit.contain,
+        title: Text(
+          "Poupe✖",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: ThemeManager.textColor,
+          ),
         ),
         centerTitle: true,
         backgroundColor: ThemeManager.appBarColor,

@@ -73,10 +73,13 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
     return Scaffold(
       backgroundColor: ThemeManager.backgroundColor,
       appBar: AppBar(
-        title: Image.asset(
-          "assets/titulo.jpg",
-          height: 40,
-          fit: BoxFit.contain,
+        title: Text(
+          "Poupe✖",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: ThemeManager.textColor,
+          ),
         ),
         centerTitle: true,
         backgroundColor: ThemeManager.appBarColor,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../repository/meta_financeira_repository_simple.dart';
 import '../repository/theme_manager.dart';
+import '../repository/achievement_system.dart';
 
 class MetasFinanceirasScreen extends StatefulWidget {
   const MetasFinanceirasScreen({Key? key}) : super(key: key);
@@ -11,6 +12,7 @@ class MetasFinanceirasScreen extends StatefulWidget {
 
 class _MetasFinanceirasScreenState extends State<MetasFinanceirasScreen> {
   final MetaFinanceiraRepositorySimple _repository = MetaFinanceiraRepositorySimple();
+  final AchievementSystem _achievementSystem = AchievementSystem();
   List<Map<String, dynamic>> _metas = [];
   String? _statusSelecionado;
 
@@ -143,10 +145,28 @@ class _MetasFinanceirasScreenState extends State<MetasFinanceirasScreen> {
                           status: _statusSelecionado!,
                         );
                         _carregarMetas();
+                        
+                        // Verificar conquistas
+                        final novasConquistas = await _achievementSystem.verificarMeta();
+                        
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Meta criada com sucesso!')),
                         );
+                        
+                        // Mostrar conquistas desbloqueadas
+                        for (String conquistaId in novasConquistas) {
+                          final conquista = AchievementSystem.conquistas[conquistaId];
+                          if (conquista != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('🏆 Conquista: ${conquista['titulo']}! +${conquista['pontos']} pontos'),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          }
+                        }
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Erro: $e')),
