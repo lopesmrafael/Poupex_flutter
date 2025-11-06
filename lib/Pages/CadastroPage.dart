@@ -188,6 +188,7 @@ class _CadastroPageState extends State<CadastroPage> {
                   onPressed: _isLoading ? null : _inscrever,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF3A6F3A),
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),

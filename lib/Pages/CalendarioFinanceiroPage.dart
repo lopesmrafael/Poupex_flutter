@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_pity/Widget/calendar_widget.dart';
 import 'package:projeto_pity/Widget/task_list_widget.dart';
+import '../repository/theme_manager.dart';
 
 class CalendarioScreen extends StatefulWidget {
   @override
@@ -124,26 +125,26 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF327355),
+      backgroundColor: ThemeManager.backgroundColor,
       appBar: AppBar(
         title: Image.asset(
           "assets/titulo.jpg",
           height: 40,
           fit: BoxFit.contain,
         ),
-        backgroundColor: Color(0xFF327355),
+        backgroundColor: ThemeManager.appBarColor,
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.settings, color: Colors.white),
+            icon: Icon(Icons.settings, color: ThemeManager.textColor),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.notifications, color: Colors.white),
+            icon: Icon(Icons.notifications, color: ThemeManager.textColor),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.account_circle, color: Colors.white),
+            icon: Icon(Icons.account_circle, color: ThemeManager.textColor),
             onPressed: () {},
           ),
         ],
@@ -156,7 +157,7 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
               'Diário de Finanças\nCalendário',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.white,
+                color: ThemeManager.textColor,
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
               ),
@@ -199,8 +200,8 @@ class _CalendarioScreenState extends State<CalendarioScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddEventDialog,
-        backgroundColor: Color(0xFF327355),
-        child: Icon(Icons.add, color: Colors.white),
+        backgroundColor: ThemeManager.appBarColor,
+        child: Icon(Icons.add, color: ThemeManager.textColor),
       ),
     );
   }

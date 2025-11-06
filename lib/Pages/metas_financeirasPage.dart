@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../repository/meta_financeira_repository_simple.dart';
+import '../repository/theme_manager.dart';
 
 class MetasFinanceirasScreen extends StatefulWidget {
   const MetasFinanceirasScreen({Key? key}) : super(key: key);
@@ -127,7 +128,10 @@ class _MetasFinanceirasScreenState extends State<MetasFinanceirasScreen> {
                   child: const Text("Cancelar", style: TextStyle(color: Colors.red)),
                 ),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                  ),
                   onPressed: () async {
                     if (tituloController.text.isNotEmpty &&
                         valorController.text.isNotEmpty &&
@@ -178,18 +182,18 @@ class _MetasFinanceirasScreenState extends State<MetasFinanceirasScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF3D8361),
+      backgroundColor: ThemeManager.backgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF3D8361),
+        backgroundColor: ThemeManager.appBarColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: ThemeManager.textColor),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Metas Financeiras',
           style: TextStyle(
-            color: Colors.white,
+            color: ThemeManager.textColor,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
@@ -204,6 +208,7 @@ class _MetasFinanceirasScreenState extends State<MetasFinanceirasScreen> {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -248,7 +253,7 @@ class _MetasFinanceirasScreenState extends State<MetasFinanceirasScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1B4332),
+        color: ThemeManager.cardColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

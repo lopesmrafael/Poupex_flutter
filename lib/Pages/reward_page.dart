@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../repository/theme_manager.dart';
 
 // 🔹 Repositório local de pontos e desafios concluídos
 class PontosRepository {
@@ -69,7 +70,7 @@ class DesafioCard extends StatelessWidget {
     final bool podeConcluir = !desafio.concluido;
 
     return Card(
-      color: const Color(0xFF4A9073),
+      color: ThemeManager.cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -214,17 +215,17 @@ class _DesafiosPageState extends State<DesafiosPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF54A781),
+      backgroundColor: ThemeManager.backgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           "Desafios do App",
           style: TextStyle(
-            color: Colors.white,
+            color: ThemeManager.textColor,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF327355),
+        backgroundColor: ThemeManager.appBarColor,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -233,7 +234,7 @@ class _DesafiosPageState extends State<DesafiosPage> {
             // Cabeçalho de pontos acumulados
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFF327355),
+                color: ThemeManager.cardColor,
                 borderRadius: BorderRadius.circular(16),
               ),
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),

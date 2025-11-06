@@ -179,6 +179,7 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: _entrar,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2E7031),
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -218,6 +219,7 @@ GestureDetector(
                   label: const Text("Entrar com Google"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF3EA860),
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -236,6 +238,7 @@ GestureDetector(
                   label: const Text("Entrar com Facebook"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF3EA860),
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),

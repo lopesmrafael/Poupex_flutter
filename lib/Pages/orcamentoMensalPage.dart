@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../repository/orcamento_repository_simple.dart';
+import '../repository/theme_manager.dart';
 
 class OrcamentoMensal extends StatefulWidget {
   const OrcamentoMensal({super.key});
@@ -100,7 +101,7 @@ class _OrcamentoMensalState extends State<OrcamentoMensal> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF54A781),
+      backgroundColor: ThemeManager.backgroundColor,
       appBar: AppBar(
         title: Image.asset(
           "assets/titulo.jpg",
@@ -108,7 +109,7 @@ class _OrcamentoMensalState extends State<OrcamentoMensal> {
           fit: BoxFit.contain,
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF327355),
+        backgroundColor: ThemeManager.appBarColor,
         actions: [
           IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
           const SizedBox(width: 12),
@@ -159,7 +160,8 @@ class _OrcamentoMensalState extends State<OrcamentoMensal> {
               child: ElevatedButton(
                 onPressed: adicionarOrcamento,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF327355),
+                  backgroundColor: ThemeManager.appBarColor,
+                  foregroundColor: Colors.white,
                   minimumSize: const Size(120, 40),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
@@ -171,7 +173,7 @@ class _OrcamentoMensalState extends State<OrcamentoMensal> {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: const Color(0xFF327355), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: ThemeManager.cardColor, borderRadius: BorderRadius.circular(8)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -188,7 +190,7 @@ class _OrcamentoMensalState extends State<OrcamentoMensal> {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: const Color(0xFF327355), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: ThemeManager.cardColor, borderRadius: BorderRadius.circular(8)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -205,7 +207,7 @@ class _OrcamentoMensalState extends State<OrcamentoMensal> {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: const Color(0xFF327355), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: ThemeManager.cardColor, borderRadius: BorderRadius.circular(8)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

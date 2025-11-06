@@ -150,6 +150,7 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
               onPressed: _baixarRelatorio,
               style: ElevatedButton.styleFrom(
                 backgroundColor: ThemeManager.cardColor,
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -186,6 +187,7 @@ class _RelatorioFinanceiroPageState extends State<RelatorioFinanceiroPage> {
               onPressed: _enviarPorEmail,
               style: ElevatedButton.styleFrom(
                 backgroundColor: ThemeManager.cardColor,
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

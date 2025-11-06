@@ -71,6 +71,7 @@ class RewardCard extends StatelessWidget {
                       backgroundColor: canRedeem
                           ? Colors.green
                           : Colors.grey.shade400,
+                      foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
