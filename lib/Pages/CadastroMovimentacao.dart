@@ -257,6 +257,9 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
                   child: const Text('Cancelar', style: TextStyle(color: Colors.white70)),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                  ),
                   onPressed: () async {
                     if (descricaoCtrl.text.isNotEmpty && valorCtrl.text.isNotEmpty) {
                       final valor = double.tryParse(valorCtrl.text);
@@ -463,6 +466,7 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF327355),
+                              foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -475,6 +479,7 @@ class _CadastroMovimentacaoState extends State<CadastroMovimentacao> {
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF2E5A3E),
+                            foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
