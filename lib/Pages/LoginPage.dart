@@ -32,11 +32,9 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _loginController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
   final AuthRepository _authRepository = AuthRepository();
+  bool _obscurePassword = true;
 
-  bool _isValidEmail(String email) {
-    final validDomains = ['@gmail.com', '@hotmail.com', '@yahoo.com', '@outlook.com'];
-    return validDomains.any((domain) => email.toLowerCase().endsWith(domain));
-  }
+  
 
   void _showInvalidEmailDialog() {
     showDialog(
@@ -44,10 +42,7 @@ class _LoginPageState extends State<LoginPage> {
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF327355),
         title: const Text('Email Inválido', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'O email deve conter um domínio válido:\n• @gmail.com\n• @hotmail.com\n• @yahoo.com\n• @outlook.com',
-          style: TextStyle(color: Colors.white70),
-        ),
+        
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -73,10 +68,7 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    if (!_isValidEmail(login)) {
-      _showInvalidEmailDialog();
-      return;
-    }
+    
 
     try {
       final user = await _authRepository.signIn(login, senha);
@@ -156,9 +148,20 @@ class _LoginPageState extends State<LoginPage> {
               // Campo Senha
               TextField(
                 controller: _senhaController,
-                obscureText: true,
+                obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.lock, color: Colors.black),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
                   hintText: 'Senha',
                   filled: true,
                   fillColor: Colors.white,

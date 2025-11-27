@@ -6,7 +6,17 @@ class AuthRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
   // Fallback local para quando Firebase não estiver disponível
-  static Map<String, Map<String, dynamic>> _localUsers = {};
+  static Map<String, Map<String, dynamic>> _localUsers = {
+    // Usuário padrão para testes
+    'user_-1829053464': {
+      'uid': 'user_-1829053464',
+      'email': 'teste@gmail.com',
+      'displayName': 'Usuário Teste',
+      'telefone': '(11) 99999-9999',
+      'password': '123456',
+      'createdAt': '2024-01-01T00:00:00.000Z',
+    }
+  };
   static Map<String, dynamic>? _currentUser;
   
   User? get currentUser => _auth.currentUser;
@@ -56,7 +66,7 @@ class AuthRepository {
             throw Exception('Senha incorreta');
           }
         } else {
-          throw Exception('Usuário não encontrado');
+          throw Exception('Usuário não encontrado. Use: teste@gmail.com / 123456 ou cadastre-se');
         }
       }
       return null;
